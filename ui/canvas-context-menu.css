@@ -1,0 +1,12 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+/* Six connected tools share the node flywheel's geometry, palette and motion. */
+#canvas-context-menu.canvas-node-menu{padding:0;border:0;border-radius:0;background:none;box-shadow:none}
+#canvas-context-menu.canvas-node-menu button.radial-menu-item{padding:9px 12px;column-gap:10px;border-radius:12px;background:var(--surface);color:var(--text);border-color:color-mix(in srgb,var(--action-color) 45%,var(--line));font-weight:500}
+#canvas-context-menu.canvas-node-menu button.radial-menu-item:hover,#canvas-context-menu.canvas-node-menu button.radial-menu-item:focus-visible{background:color-mix(in srgb,var(--action-color) 12%,var(--surface));border-color:var(--action-color)}
+#canvas-context-menu.canvas-node-menu button[aria-disabled=true]{color:var(--muted);cursor:default}
+#canvas-context-menu.canvas-node-menu button[aria-disabled=true] .radial-menu-icon{color:var(--muted)}
+#canvas-context-menu.canvas-node-menu .action-menu-help{font-size:12px;font-weight:400;line-height:17px;color:var(--muted)}
+#canvas-context-menu.canvas-node-menu .radial-menu-hub{display:none!important}
+#canvas-context-menu.canvas-node-menu .radial-menu-icon{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}

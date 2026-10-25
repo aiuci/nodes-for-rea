@@ -1,0 +1,27 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+/* History returns to a session; housekeeping has its own row. All dimensions
+   are local to this disclosure and use the existing theme tokens. */
+#history-panel {position:fixed;top:64px;right:20px;width:min(640px,calc(100vw - 32px));max-height:calc(100dvh - 80px);padding:20px;overflow:auto;overscroll-behavior:contain}
+#history-panel .history-heading {flex-wrap:wrap;align-items:start;gap:12px}
+#history-panel .history-heading h2 {font-size:1.125rem;line-height:1.4;overflow-wrap:anywhere}
+#history-panel .history-heading-actions {flex-wrap:wrap;min-width:0}
+#history-panel button {font-size:.8125rem;line-height:1.5;white-space:normal;max-width:100%;margin:0}
+#history-panel .history-summary {font-size:.8125rem;line-height:1.5;color:var(--muted);margin:0 0 8px;overflow-wrap:anywhere}
+#history-panel #history-bulk-actions {gap:8px;font-size:.75rem;border-bottom:1px solid var(--line)}
+#history-panel #history-bulk-actions button {font-size:.75rem}
+#history-panel .history-entry {display:grid;grid-template-columns:24px minmax(0,1fr);gap:8px 10px;align-items:start;padding:14px 0;border-bottom:1px solid var(--line);min-width:0}
+#history-panel .history-entry:last-child {border-bottom:0;padding-bottom:0}
+#history-panel .history-checkbox {grid-column:1;grid-row:1;align-self:start;margin:12px 2px 0;width:18px;height:18px;accent-color:var(--accent)}
+#history-panel .history-open {grid-column:2;grid-row:1;display:grid;gap:7px;min-width:0;width:100%;padding:12px;text-align:left;border:1px solid var(--line);border-radius:var(--theme-radius,9px);overflow:hidden}
+#history-panel .history-open[aria-current=true] {border-color:var(--accent)}
+#history-panel .history-open-heading {display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px;min-width:0}
+#history-panel .history-project-name {font-size:.9375rem;font-weight:650;line-height:1.5;min-width:0;overflow-wrap:anywhere}
+#history-panel .history-open-cue {color:var(--accent);font-size:.75rem;line-height:1.5}
+#history-panel .history-session {display:flex;flex-wrap:wrap;gap:2px 12px;min-width:0;color:var(--muted);font-size:.75rem;line-height:1.6;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+#history-panel .history-location {display:block;min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:.75rem;line-height:1.6}
+#history-panel .history-entry-actions {grid-column:2;grid-row:2;display:flex;flex-wrap:wrap;gap:8px;min-width:0}
+#history-panel .history-entry-actions button {width:auto;min-height:32px;padding:5px 10px;font-size:.75rem}
+#history-panel .history-empty {color:var(--muted);font-size:.875rem;line-height:1.6}
+@media(max-width:600px){#history-panel {right:12px;width:calc(100vw - 24px);padding:16px}#history-panel .history-entry {column-gap:6px}}

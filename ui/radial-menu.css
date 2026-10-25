@@ -1,0 +1,52 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+/* Compact connected tools leave the originating node and reader visible. */
+.radial-action-menu,.node-context-menu.radial-action-menu{position:fixed;z-index:120;padding:0;border:0;border-radius:0;background:none;box-shadow:none;max-height:none;max-width:calc(100vw - 20px);overflow:visible;overscroll-behavior:contain;pointer-events:auto}
+.radial-action-menu[data-scroll=true]{overflow:auto;scrollbar-width:thin;scrollbar-color:#53677d transparent;border-radius:12px}
+.radial-menu-surface{position:relative;width:100%;pointer-events:none}
+.radial-action-menu[data-symmetric=true]{pointer-events:none}
+.radial-action-menu button.radial-menu-item{position:absolute;display:grid;grid-template-columns:24px minmax(0,1fr);align-items:center;column-gap:14px;box-sizing:border-box;margin:0;min-height:0;padding:12px 16px;border:1px solid color-mix(in srgb,var(--accent,#aab7ee) 45%,#344250);border-radius:14px;background:#101923;color:#e2e8f0;font-family:inherit;font-size:16px;font-weight:600;line-height:22px;text-align:left;white-space:normal;overflow-wrap:anywhere;box-shadow:inset 0 1px 0 #ffffff12,0 4px 14px #0002;pointer-events:auto;transition:background-color 140ms,border-color 140ms,box-shadow 140ms;animation:radial-reveal 230ms cubic-bezier(.2,.85,.25,1) both;animation-delay:var(--reveal-delay,0ms)}
+.radial-action-menu .radial-menu-icon{display:block;width:24px;height:24px;color:var(--accent,#b8c3ee);pointer-events:none}
+.radial-action-menu .radial-menu-copy{display:grid;gap:4px;min-width:0;text-align:left;pointer-events:none}
+.radial-action-menu .radial-menu-label{display:block;line-height:22px}
+.radial-action-menu .action-disabled-reason{display:block;margin:0;font-size:12px;font-weight:400;line-height:17px;color:var(--muted,#b6c4d4);text-align:left;text-transform:none;letter-spacing:normal}
+.radial-action-menu button:disabled .radial-menu-icon{color:var(--muted,#b6c4d4);opacity:.7}
+.radial-action-menu button.radial-menu-item.primary{font-weight:650;border-color:color-mix(in srgb,var(--action-color) 75%,#344250);background:color-mix(in srgb,var(--action-color) 13%,#101923)}
+.radial-action-menu button.radial-menu-item:hover,.radial-action-menu button.radial-menu-item:focus-visible{background:color-mix(in srgb,var(--action-color) 17%,#16212d);border-color:var(--action-color);outline:1px solid color-mix(in srgb,var(--action-color) 55%,transparent);outline-offset:2px}
+.radial-action-menu button.radial-menu-item:disabled{opacity:1;color:var(--muted,#b6c4d4);cursor:default}
+.radial-action-menu button.radial-menu-hub{position:fixed;display:flex;justify-content:center;align-items:center;min-height:26px;height:26px;min-width:26px;padding:0;border:1px solid #44566b;border-radius:50%;background:#14202b;color:#b6c4d4;font-size:18px;line-height:1;pointer-events:auto}
+.radial-menu-wires{position:fixed;inset:0;width:100vw;height:100vh;overflow:hidden;pointer-events:none;z-index:118}
+.radial-menu-wires path{stroke-dasharray:1;animation:radial-line-extend 300ms ease-out both;animation-delay:var(--reveal-delay,0ms)}
+.radial-menu-bridge{position:fixed;inset:0;z-index:119;pointer-events:auto}
+.radial-closing{pointer-events:none!important}.radial-closing button{pointer-events:none!important;animation:radial-retract 150ms ease-in both!important;animation-delay:0ms!important}.radial-closing .radial-menu-hub{opacity:0}
+@keyframes radial-reveal{from{opacity:0;transform:translate(var(--from-x),var(--from-y)) scale(.8)}to{opacity:1;transform:translate(0,0) scale(1)}}
+@keyframes radial-retract{to{opacity:0;transform:translate(var(--from-x),var(--from-y)) scale(.8)}}
+@keyframes radial-line-extend{from{stroke-dashoffset:1;opacity:0}to{stroke-dashoffset:0;opacity:1}}
+@media(prefers-reduced-motion:reduce){.radial-action-menu button.radial-menu-item,.radial-closing button,.radial-menu-wires path{animation:none!important;transform:none;stroke-dashoffset:0}.radial-action-menu *{transition:none!important}}
+.growing-node.menu-open .node-local-controls{opacity:1;pointer-events:auto}
+.growing-node .node-local-controls{padding:0;border:0;background:none;box-shadow:none}
+.growing-node .node-local-controls .node-menu-trigger{min-width:36px;min-height:32px;background:#172737;border:1px solid #52657d;border-radius:18px;font-size:18px}
+.growing-node .node-play{position:absolute;right:9px;top:calc(50% - 15px);min-width:30px;min-height:30px;padding:0;border:0;border-radius:9px;background:#edf1f8;color:#111821;font-size:12px;z-index:4}
+.growing-node .node-stop{background:#392531;color:#ffc3d1}
+.growing-node .node-local-controls>.node-stop{position:static;inset:auto;transform:none;flex:0 0 30px;min-width:30px;min-height:30px}
+.growing-node:has(>.node-play) .growing-node-open{padding-right:36px}
+.growing-node .growing-node-open{touch-action:none;cursor:grab;user-select:none}
+.growing-node.node-dragging,.growing-node.node-dragging .growing-node-open{cursor:grabbing}
+.growing-node .node-run-status{max-width:calc(100% - 42px);overflow:hidden;text-overflow:ellipsis}
+#map-scene{z-index:2}#node-connection{z-index:1;pointer-events:none}
+#workspace-outline .outline-actions{flex-shrink:0;margin-top:4px;min-width:28px;min-height:30px;padding:0 4px;border:0;border-radius:7px;opacity:0;color:#b9c8df}
+#workspace-outline .outline-row:hover .outline-actions,#workspace-outline .outline-row:focus-within .outline-actions,#workspace-outline .outline-row.menu-open .outline-actions{opacity:1}
+@media (hover:none){#workspace-outline .outline-actions{opacity:1}}
+
+.growing-node:has(>.node-fold)>.node-play{right:46px}
+.growing-node:has(>.node-fold):has(>.node-play) .growing-node-open{padding-right:73px}
+.growing-node:has(>.node-play) .growing-node-open strong,.growing-node:has(>.node-play) .growing-node-open small{padding-right:0}
+
+.radial-action-menu .action-menu-help{display:block;margin:0;font-size:12px;font-weight:400;line-height:17px;color:inherit;opacity:.9;text-transform:none;letter-spacing:normal}
+.radial-action-menu .action-menu-help[hidden]{display:none}
+
+/* Only the canvas menu reveals shortcut hints, and only on pointer hover. */
+#canvas-context-menu .radial-menu-label{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+#canvas-context-menu .canvas-action-shortcut{flex:none;visibility:hidden;opacity:0;margin:0;padding:0;border:0;background:none;box-shadow:none;color:inherit;font-family:inherit;font-size:10px;font-weight:400;line-height:inherit;white-space:nowrap;transition:opacity 120ms}
+@media(hover:hover){#canvas-context-menu .radial-menu-item:hover .canvas-action-shortcut{visibility:visible;opacity:.6}}

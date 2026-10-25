@@ -1,0 +1,43 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+/* User-requested top-center controls. Independent of the node-action styling. */
+#workspace-heading{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,auto) minmax(0,1fr);gap:18px;padding:16px 8px 10px;align-items:center}
+.workspace-heading-copy{grid-column:1;min-width:0}
+#workspace-title{font-size:24px;overflow-wrap:anywhere}
+#workspace-subtitle{line-height:1.5}
+.workspace-view-tools{grid-column:2;display:flex;flex-direction:column;align-items:center;gap:10px;max-width:100%;min-width:0}
+.workspace-view-controls{display:flex;align-items:center;justify-content:center;gap:6px}
+.workspace-view-controls button{min-height:36px;font-size:12px;padding:7px 15px;border-radius:8px;background:#111b24}
+.workspace-view-controls button[aria-expanded=true],.workspace-view-controls button[aria-pressed=true]{background:#29384a;border-color:#b8a8ec;color:#fff}
+.layout-picker{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;max-width:min(100%,790px);align-items:stretch}
+.layout-choice{display:flex;align-items:center;justify-content:center;gap:7px;min-height:41px;padding:6px 10px;border-radius:8px;background:#111b24;color:#acb9cc;font-size:11px}
+.layout-choice svg{display:block;width:35px;height:25px;flex:none;stroke:currentColor;stroke-width:1.2;stroke-linejoin:round;fill:none;overflow:visible}
+.layout-choice svg path{opacity:.6}.layout-choice .layout-leaf{fill:#111b24}.layout-choice .layout-root{fill:currentColor;stroke:currentColor}
+.layout-choice[aria-pressed=true]{color:#f0eaff;border-color:#c3b6ff;background:#302a44}
+.layout-choice[aria-pressed=true] .layout-leaf{fill:#302a44}
+.layout-choice:focus-visible,.workspace-view-controls button:focus-visible{outline:2px solid #e4dbff;outline-offset:3px}
+#workspace-navigation{margin-top:0;padding:0 8px 8px;min-height:31px;gap:10px}
+#workspace-navigation>div{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+#workspace-navigation button{min-height:29px;padding:4px 9px;font-size:11px}
+#workspace-navigation #workspace-count{margin-left:auto}
+#workspace-arrange-actions{display:flex;justify-content:center;align-items:center;gap:6px}
+#workspace-arrange-actions button{min-height:29px;padding:4px 9px;font-size:11px}
+#workspace-arrange-actions #workspace-fit{border-color:#92a7be;font-weight:600;background:#263747}
+#map-arrangement-guides{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+#map-arrangement-guides[hidden]{display:none}
+@media(max-width:600px){.layout-picker .layout-choice{flex:0 1 calc(20% - 3px);min-width:52px;max-width:none}}
+@media(max-width:1200px){#workspace-heading{grid-template-columns:minmax(0,1fr);gap:10px;padding:12px 4px 8px}.workspace-heading-copy{grid-column:1}#workspace-title{font-size:22px}.workspace-view-tools{grid-column:1;justify-self:center;gap:10px}.workspace-view-controls button{padding:7px 11px}.layout-choice{padding:6px 8px;gap:5px}.layout-choice svg{width:30px}}
+@media(max-width:850px){.workspace-view-tools{flex-direction:column;gap:8px}.layout-choice{padding:5px 8px}.layout-choice svg{width:31px}#workspace-heading{gap:8px}#workspace-navigation{flex-wrap:wrap}#workspace-navigation #workspace-count{font-size:10px}}
+@media(max-width:600px){#workspace-heading{padding:10px 0 8px}.workspace-heading-copy{max-width:100%}#workspace-title{font-size:20px}.workspace-view-tools{width:100%;gap:7px}.workspace-view-controls button{min-height:35px;font-size:12px}.layout-picker{width:100%;justify-content:center;gap:3px}.layout-choice{flex:1;min-width:0;max-width:88px;flex-direction:column;gap:2px;padding:5px 3px;font-size:10px;min-height:50px}.layout-choice svg{width:32px;height:24px}#workspace-navigation{padding:0 0 7px;gap:6px}#workspace-navigation #workspace-count{margin-left:0;flex:1;min-width:160px}#workspace-navigation #workspace-save{margin-left:auto}}
+@media(max-width:430px){header{padding:0 8px;gap:6px}header .brand{font-size:13px;gap:3px}header .graph-search-wrap{width:92px;min-width:0}header nav{min-width:0;gap:0}#graph-search{font-size:11px;padding-inline:8px}header nav>button{padding:5px;font-size:11px}#node-settings>summary,#workspace-menu>summary{font-size:11px;padding:6px}}
+
+/* The existing canvas origin stays put; negative graph coordinates may paint
+   behind the translucent workspace controls instead of stopping at their edge. */
+body:not(.legacy-view) #main{overflow:hidden;isolation:isolate}
+body:not(.legacy-view) #workspace-surface{z-index:0;overflow:visible}
+body:not(.legacy-view) #workspace-canvas{overflow-x:clip;overflow-y:visible}
+body:not(.legacy-view) #workspace-outline{position:relative;z-index:3;background:var(--canvas)}
+body:not(.legacy-view) :is(#workspace-heading,#workspace-notice,#workspace-map-tools,#activity){position:relative;z-index:10;background:rgba(12,20,26,.46);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);pointer-events:none}
+body:not(.legacy-view) :is(#workspace-heading,#workspace-notice,#workspace-map-tools,#activity) :is(button,input,select,summary,a){pointer-events:auto}
+@media(prefers-reduced-transparency:reduce){body:not(.legacy-view) :is(#workspace-heading,#workspace-notice,#workspace-map-tools,#activity){background:rgba(12,20,26,.94);backdrop-filter:none;-webkit-backdrop-filter:none}}

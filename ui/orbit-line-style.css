@@ -1,0 +1,10 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+/* Orbit geometry owns these widths; themes still own ordinary path colors. */
+#workspace-canvas[data-layout=orbit]{--orbit-connection-width:1.9px;--orbit-connection-dots:2.2px;--orbit-selected-emphasis:1.35;--orbit-selected-color:#1687ff;--orbit-guide-core-width:1.2px;--orbit-guide-ring-width:1.4px;--orbit-guide-opacity:.5}
+:root[data-theme] #workspace-canvas[data-layout=orbit] :is(#map-wires,#node-connection){--map-wire-screen-width:clamp(.65px,min(calc(var(--orbit-connection-width) * var(--map-wire-factor,1)),var(--map-wire-ceiling,3px)),3px);--map-wire-screen-dots:clamp(1px,min(calc(var(--orbit-connection-dots) * var(--map-wire-factor,1)),calc(var(--map-wire-ceiling,3px) + .3px)),3.6px);--map-wire-export-width:var(--orbit-connection-width);--map-wire-export-dots:var(--orbit-connection-dots);--map-wire-export-emphasis:var(--orbit-selected-emphasis)}
+:root[data-theme] #workspace-canvas[data-layout=orbit] #map-wires>.map-wire.orbit-related{stroke:var(--orbit-selected-color);stroke-width:calc(var(--map-wire-screen-width) * var(--orbit-selected-emphasis) / var(--map-camera-scale,1));opacity:1}
+:root[data-theme] #workspace-canvas[data-layout=orbit] #map-wires[data-dots=true]>.map-wire.orbit-related:not(.comparison-wire){stroke-width:calc(var(--map-wire-screen-dots) * var(--orbit-selected-emphasis) / var(--map-camera-scale,1))}
+:root[data-theme] #workspace-canvas[data-layout=orbit] #map-wires>.map-wire-contour.orbit-related{stroke-width:calc((var(--map-wire-screen-width) * var(--orbit-selected-emphasis) + 1px * var(--map-wire-factor,1)) / var(--map-camera-scale,1))}
+:root[data-theme] #workspace-canvas[data-layout=orbit] #map-arrangement-guides :is([data-orbit-core],[data-orbit-depth]){stroke:var(--muted);stroke-opacity:var(--orbit-guide-opacity)}

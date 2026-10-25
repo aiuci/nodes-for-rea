@@ -1,0 +1,10 @@
+{
+  "name": "buffer-crc32",
+  "version": "0.2.13",
+  "source": {
+    "type": "git",
+    "url": "git://github.com/brianloveswords/buffer-crc32.git"
+  },
+  "originalSha256": "f673ad9729984769996849030def1cb0b8da721d492a3b9beedfe36dbc6be117",
+  "changes": "CommonJS extension and relative dependency paths only; license preserved"
+}

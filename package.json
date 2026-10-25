@@ -1,0 +1,64 @@
+{
+  "name": "nodes-for-rea",
+  "version": "0.3.0-preview.20261025.6",
+  "description": "A persistent visual workspace for exploring software with REA and your connected AI agent.",
+  "private": false,
+  "license": "AGPL-3.0-only",
+  "author": "Jeremy Opio (Gorgeous Systems)",
+  "homepage": "https://gorgeous.systems/nodes-for-rea/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aiuci/nodes-for-rea.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aiuci/nodes-for-rea/issues"
+  },
+  "type": "module",
+  "main": "main.cjs",
+  "productName": "Nodes for REA",
+  "bin": {
+    "nodes-for-rea": "bin/nodes-for-rea.cjs"
+  },
+  "os": [
+    "win32"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "engines": {
+    "node": "^22.19.0 || ^24.11.0 || >=26.0.0"
+  },
+  "files": [
+    "main.cjs",
+    "preload.cjs",
+    "lib/",
+    "ui/",
+    "assets/",
+    "bin/",
+    "npm-release.json",
+    "npm-shrinkwrap.json",
+    "LICENSE",
+    "NOTICE.md",
+    "TRADEMARKS.md",
+    "CONTRIBUTING.md",
+    "SOURCE.md",
+    "THIRD-PARTY-NOTICES.md",
+    "LICENSES/",
+    "DEPENDENCY-LICENSES.json",
+    "source/"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "dependencies": {
+    "cheerio": "1.2.0",
+    "electron": "44.7.2",
+    "rea-agents": "6.5.0",
+    "@openai/codex": "0.149.0"
+  },
+  "scripts": {
+    "start": "node bin/nodes-for-rea.cjs",
+    "test": "node --test tests/*.test.mjs"
+  }
+}

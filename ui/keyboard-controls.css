@@ -1,0 +1,31 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+.anchored-command-menu{position:fixed;z-index:190;box-sizing:border-box;width:264px;padding:5px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:var(--theme-shadow);overflow:auto;overscroll-behavior:contain;animation:command-menu-in 110ms ease-out}
+.anchored-command-menu>button{display:flex;align-items:center;gap:12px;width:100%;min-height:34px;border:0;background:transparent;color:var(--ink);padding:7px 10px;border-radius:7px;text-align:left;white-space:normal;font-size:12px}
+.anchored-command-menu>button>span:first-child{flex:1;min-width:0}
+.anchored-command-menu>button:is(:hover,:focus-visible){background:var(--theme-selection);outline:1px solid var(--accent);outline-offset:-1px}
+.anchored-command-menu>button[aria-checked=true]::before{content:'✓';color:var(--accent)}
+.anchored-command-menu>button:disabled{opacity:.45}
+.anchored-command-menu kbd{flex:none;font:11px inherit;color:var(--muted);white-space:nowrap}
+.anchored-command-menu .command-menu-back{color:var(--muted);border-bottom:1px solid var(--line);border-radius:0}
+.keyboard-command-map{width:min(780px,calc(100vw - 24px));max-height:calc(100dvh - 24px);box-sizing:border-box;overflow:auto;padding:22px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:18px;box-shadow:var(--theme-shadow)}
+.keyboard-map-heading{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.keyboard-map-heading h2{font-size:20px;margin:0 0 16px}
+.keyboard-command-map>label{display:block;color:var(--muted);font-size:12px;margin-bottom:5px}
+#keyboard-map-search{width:100%;box-sizing:border-box;min-height:36px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:8px 10px}
+.keyboard-map-status,.keyboard-map-hint{font-size:12px;color:var(--muted);line-height:1.5}
+.keyboard-map-branches{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:20px 0}
+.keyboard-map-branch{border-top:2px solid var(--line);min-width:0;padding-top:8px}
+.keyboard-map-branch[data-context=true]{border-color:var(--accent)}
+.keyboard-map-branch h3{font-size:14px;margin:2px 0 12px}
+.keyboard-map-command{display:flex;flex-direction:column;align-items:flex-start;gap:7px;width:100%;min-height:66px;margin:0 0 7px;padding:8px;box-sizing:border-box;background:transparent;border:1px solid transparent;border-radius:9px;color:var(--ink);text-align:left;font-size:12px}
+button.keyboard-map-command:is(:hover,:focus-visible){border-color:var(--accent);background:var(--theme-selection)}
+.keyboard-map-command:disabled{opacity:.5}
+.keyboard-map-keys{display:flex;gap:4px;flex-wrap:wrap}
+.keyboard-map-keys kbd{display:inline-grid;place-items:center;min-width:27px;min-height:27px;padding:2px 6px;box-sizing:border-box;border:1px solid var(--line);border-bottom-width:3px;border-radius:6px;background:var(--surface-2,var(--surface));font:600 13px inherit}
+.keyboard-map-keys small{color:var(--muted)}
+#workspace-canvas.space-panning,#workspace-canvas.space-panning *{cursor:grab!important}
+@keyframes command-menu-in{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+@media(max-width:580px){.keyboard-map-branches{grid-template-columns:1fr;gap:12px}.keyboard-map-branch{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}.keyboard-map-branch h3{grid-column:1/-1}.keyboard-command-map{padding:15px}}
+@media(prefers-reduced-motion:reduce){.anchored-command-menu{animation:none}}

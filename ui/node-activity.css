@@ -1,0 +1,37 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+/* Scope Logic preset_map.html's circling conic border, adapted to the node's
+   perimeter. Only real preparation/execution animates, never mere selection. */
+@property --rea-activity-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+.node-activity-ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  padding: 3px;
+  pointer-events: none;
+  z-index: 2;
+  background: conic-gradient(from var(--rea-activity-angle),
+    transparent 0deg 190deg,
+    color-mix(in srgb, var(--topic) 30%, transparent) 230deg,
+    var(--topic) 290deg,
+    #f7f8ff 326deg,
+    transparent 340deg 360deg);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  filter: drop-shadow(0 0 4px var(--topic));
+  animation: rea-node-orbit 2.8s linear infinite;
+}
+.growing-node.running { box-shadow: 0 0 16px color-mix(in srgb,var(--topic) 24%,transparent); }
+.growing-node.running .node-run-phase { color: #dbe6f7; }
+.growing-node .node-run-status { pointer-events: none; }
+@keyframes rea-node-orbit { to { --rea-activity-angle: 360deg; } }
+@media (prefers-reduced-motion: reduce) {
+  .node-activity-ring { animation: none; --rea-activity-angle: 35deg; }
+}

@@ -1,0 +1,28 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+#quick-tour{box-sizing:border-box;width:min(500px,calc(100vw - 32px));max-height:calc(100dvh - 40px);padding:32px;border:1px solid var(--line);border-radius:20px;background:var(--surface);color:var(--ink,var(--text));box-shadow:0 16px 64px #0003;overflow:auto;font:inherit;line-height:1.6}
+#quick-tour::backdrop{background:#101323a8}
+#quick-tour .tour-eyebrow{margin:0 0 12px;font-size:13px;font-weight:600;color:var(--muted);letter-spacing:.025em}
+#quick-tour h2{margin:0 0 12px;font-size:28px;line-height:1.2;letter-spacing:-.025em;font-weight:600}
+#quick-tour p{margin:12px 0;font-size:16px;line-height:1.6}
+#quick-tour .tour-note{font-size:13px;color:var(--muted)}
+#quick-tour .tour-brand{width:42px;height:42px;margin-bottom:22px}
+#quick-tour .tour-progress{display:flex;gap:6px;margin:0 0 24px}
+#quick-tour .tour-progress span{height:3px;flex:1;background:var(--line);border-radius:2px}
+#quick-tour .tour-progress span.passed{background:var(--accent)}
+#quick-tour .tour-actions{display:flex;flex-direction:column;gap:10px;margin-top:24px}
+#quick-tour button{font:inherit;font-size:15px;min-height:44px;white-space:normal}
+#quick-tour .tour-primary{background:var(--accent);color:var(--surface);border:1px solid var(--accent);font-weight:600;padding:10px 18px;border-radius:10px}
+#quick-tour .tour-secondary{background:transparent;color:var(--ink,var(--text));border:1px solid var(--line);border-radius:10px;padding:9px 14px}
+#quick-tour .tour-footer{display:flex;justify-content:space-between;gap:12px;margin-top:20px;border-top:1px solid var(--line);padding-top:12px}
+#quick-tour .tour-footer button{background:transparent;color:var(--muted);border:0;padding:4px 0;min-height:36px;font-size:13px}
+#quick-tour :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+#quick-tour button:disabled{opacity:.55;cursor:default}
+#quick-tour pre,#quick-tour blockquote{font-size:14px;line-height:1.65;background:var(--canvas);border:1px solid var(--line);border-radius:10px;padding:14px;margin:16px 0;white-space:pre-wrap;overflow-wrap:anywhere;max-height:200px;overflow:auto}
+#quick-tour #tour-status{font-size:14px;color:var(--ink,var(--text));overflow-wrap:anywhere}
+#quick-tour details{margin-top:16px;font-size:13px;color:var(--muted)}
+#quick-tour summary{cursor:pointer;min-height:32px}
+.tour-reentry{position:fixed;right:20px;bottom:16px;z-index:1200;min-height:40px;background:var(--surface);color:var(--ink,var(--text));border:1px solid var(--line);border-radius:10px;padding:8px 14px;box-shadow:0 2px 12px #0001}
+.tour-reentry[hidden]{display:none}
+@media(max-width:600px){#quick-tour{padding:24px;max-height:calc(100dvh - 24px)}#quick-tour h2{font-size:25px}.tour-reentry{bottom:8px;right:8px}}

@@ -1,0 +1,31 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+/* Quiet header entry action, secondary preferences, and a neutral visual origin. */
+:root header nav>#new{padding:5px 12px;min-height:32px;background:transparent;color:var(--ink,var(--text));font-weight:500;border:1px solid var(--line);border-radius:8px}
+:root header nav>#new:hover{background:var(--canvas);border-color:var(--muted)}
+#workspace-menu #node-settings>summary{display:flex;align-items:center;justify-content:space-between;padding:10px 13px;border-radius:7px;font-size:13px}
+#workspace-menu #node-settings>summary:hover{background:#21303d}
+#workspace-menu #node-settings>summary::after{content:'›';font-size:18px;color:#b7c7db}
+#workspace-menu #node-settings[open]>summary::after{transform:rotate(90deg)}
+#workspace-menu #node-settings .menu-items{position:static;width:100%;padding:12px;max-height:none;overflow:visible;border:0;border-radius:7px;background:#111b24;box-shadow:none}
+#workspace-menu #node-settings #depth-limit{width:100%;max-width:150px}
+#workspace-menu #node-settings #depth-options label{line-height:1.5;white-space:normal}
+.growing-node[data-node-id=core],.growing-node[data-node-id=core]:hover,.growing-node[data-node-id=core].selected{background:#e5ebf3;color:#14212e;border:2px solid #f1f5fa;border-radius:999px;box-shadow:0 0 0 4px #dce5f01c,0 8px 24px #0003}
+.growing-node[data-node-id=core].selected{box-shadow:0 0 0 4px #dce5f066,0 8px 24px #0003}
+.growing-node[data-node-id=core] .node-symbol{color:#243647;font-size:28px;flex-shrink:0}
+.growing-node[data-node-id=core] .growing-node-open strong{color:#14212e;font-size:15px;font-weight:700}
+.growing-node[data-node-id=core] .growing-node-open small{color:#405266;font-weight:500}
+.growing-node[data-node-id=core]>.node-fold{background:#c9d3df;color:#243647}
+@media(max-width:1100px){.new-label-detail{display:none}}
+@media(max-width:600px){:root header nav>#new{padding:5px 9px;min-height:32px}}
+
+/* A visible exit in the disclosure, plus a directional cue on its trigger. */
+#workspace-menu>summary{display:flex;align-items:center;justify-content:center;white-space:nowrap}
+#workspace-menu>summary::after{content:'';display:inline-block;width:6px;height:6px;margin-left:8px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateY(-2px) rotate(45deg)}
+#workspace-menu[open]>summary::after{transform:translateY(1px) rotate(225deg)}
+.workspace-menu-heading{display:flex;align-items:center;justify-content:space-between;padding:0 3px 6px 10px;color:#b7c7db;font-size:12px;border-bottom:1px solid #314151;margin-bottom:5px}
+#workspace-menu #workspace-menu-close{display:inline-flex;align-items:center;justify-content:center;flex:none;width:30px;min-height:30px;padding:0;font-size:21px;line-height:1;border:0;border-radius:6px}
+
+.history-entry:has(.history-checkbox){grid-template-columns:28px minmax(0,1fr) auto auto}
+@media(max-width:600px){.history-entry:has(.history-checkbox){grid-template-columns:28px minmax(0,1fr) auto}.history-entry .history-checkbox{grid-row:1 / span 2}.history-entry .history-open{grid-column:2 / span 2}.history-entry .history-folder{grid-column:2}.history-entry .history-delete{grid-column:3}}

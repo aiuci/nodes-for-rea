@@ -1,0 +1,14 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+.new-result-badge { position:absolute; left:12px; top:-11px; padding:2px 7px; background:#e8edf5; color:#17222e; border:1px solid #98a8bd; border-radius:5px; font-size:10px; line-height:15px; pointer-events:none; }
+.growing-node.new-investigation-work { outline:1px solid color-mix(in srgb,var(--topic),transparent 45%); outline-offset:3px; }
+#map-wires > .growth-wire { stroke-width:2; }
+#show-new-results { border-color:#a5b8cf; color:#e6f0ff; white-space:nowrap; }
+.growing-node.growth-awaiting { opacity:0; pointer-events:none; }
+#map-wires path.growth-awaiting { opacity:0; }
+
+.branch-travel-light{position:absolute;left:0;top:0;border-radius:50%;background:var(--topic);box-shadow:0 0 5px color-mix(in srgb,var(--topic),transparent 35%);opacity:0;pointer-events:none;z-index:4}
+.branch-landing-glow{position:absolute;inset:-2px;border-radius:inherit;border:1px solid var(--topic);box-shadow:0 0 9px color-mix(in srgb,var(--topic),transparent 70%);opacity:0;pointer-events:none}
+.growing-node.running{box-shadow:0 0 9px color-mix(in srgb,var(--topic),transparent 85%)}
+@media(prefers-reduced-motion:reduce){.branch-travel-light,.branch-landing-glow{display:none}}

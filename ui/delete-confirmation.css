@@ -1,0 +1,22 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+:root[data-theme] .delete-dialog{box-sizing:border-box;width:min(520px,calc(100vw - 32px));max-height:calc(100dvh - 40px);overflow:auto;padding:28px;border:1px solid var(--line);border-radius:20px;background:var(--surface);color:var(--ink);box-shadow:0 24px 80px #0004;font-family:inherit}
+.delete-dialog::backdrop{background:#11121c66;backdrop-filter:blur(5px)}
+.delete-dialog-icon{display:flex;align-items:center;justify-content:center;width:44px;height:44px;margin-bottom:16px;border-radius:13px;background:color-mix(in srgb,var(--theme-danger) 12%,var(--surface));color:var(--theme-danger)}
+.delete-dialog-icon svg{width:24px;height:24px}
+:root[data-theme] .delete-dialog h2{font-size:23px;font-weight:650;letter-spacing:-.4px;line-height:1.25;margin:0 32px 14px 0;color:var(--ink)}
+:root[data-theme] .delete-dialog p{font-size:14px;line-height:1.65;margin:0 0 18px;color:var(--ink)}
+.delete-dialog-items{list-style:none;padding:0;margin:0 0 18px;max-height:190px;overflow:auto;border:1px solid var(--line);border-radius:12px;background:var(--canvas)}
+.delete-dialog-items li{display:flex;flex-direction:column;gap:5px;padding:13px 15px;overflow-wrap:anywhere}
+.delete-dialog-items li+li{border-top:1px solid var(--line)}
+.delete-dialog-items strong{font-size:14px;font-weight:600;color:var(--ink)}
+.delete-dialog-items span{font-size:12px;line-height:1.5;color:var(--muted)}
+:root[data-theme] .delete-dialog .delete-dialog-kept{font-size:12px;color:var(--muted);margin-bottom:24px}
+.delete-dialog-actions{display:flex;justify-content:flex-end;gap:10px}
+:root[data-theme] .delete-dialog button{font:inherit;font-size:13px;min-height:40px;border:1px solid var(--line);border-radius:10px;padding:9px 15px;color:var(--ink);background:var(--surface);transition:none}
+:root[data-theme] .delete-dialog .delete-dialog-confirm{font-weight:600;border-color:var(--theme-danger);background:color-mix(in srgb,var(--theme-danger) 12%,var(--surface));color:var(--ink)}
+:root[data-theme] .delete-dialog .delete-dialog-confirm:hover{background:color-mix(in srgb,var(--theme-danger) 20%,var(--surface))}
+:root[data-theme] .delete-dialog .delete-dialog-close{position:absolute;right:16px;top:16px;min-height:32px;width:32px;padding:0;border:0;font-size:24px;background:transparent;color:var(--muted)}
+.delete-dialog button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media(max-width:480px){:root[data-theme] .delete-dialog{padding:24px}.delete-dialog-actions{flex-direction:column-reverse}.delete-dialog-actions button{width:100%}}

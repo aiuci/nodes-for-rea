@@ -1,0 +1,19 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+/* Static stroke styling: one existing path per relationship, no particle loop. */
+#map-wires[data-dots="true"] > .map-wire:not(.comparison-wire),
+#workspace-canvas[data-dots="true"] #node-connection > path {
+  stroke-dasharray: .01 5.5;
+  stroke-linecap: round;
+  stroke-width: 2.4;
+}
+.wire-style-control { display:inline-flex; align-items:center; gap:6px; font-size:11px; color:#b9c9de; margin-left:4px; }
+#workspace-navigation button[aria-pressed="true"] { border-color: #7f91a9; background: #223244; color: #edf2f8; }
+#workspace-canvas[data-wires="false"] #map-wires,
+#workspace-canvas[data-wires="false"] #node-connection { visibility: hidden; }
+.node-settle-shell { position:absolute; inset:-1px; border:1px solid var(--topic); border-radius:inherit; pointer-events:none; opacity:0; }
+@media (prefers-reduced-motion: reduce) { .node-settle-shell { display:none; } }
+
+#workspace-canvas[data-layout=orbit] #map-wires>.map-wire:not(.growth-wire){opacity:.6}
+#workspace-canvas[data-layout=orbit] #map-wires>.map-wire.orbit-related{opacity:1}

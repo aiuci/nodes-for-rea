@@ -1,0 +1,13 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+.dictation-field{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:6px;min-width:0;max-width:100%;width:100%}
+.dictation-field>input,.dictation-field>textarea{min-width:0;width:100%;max-width:100%}
+:root[data-theme] .dictation-field>.text-mic{display:inline-flex;align-items:center;justify-content:center;min-width:38px;min-height:38px;margin:0;padding:7px;color:var(--ink);background:var(--surface-raised);border:1px solid var(--line);border-radius:9px;font-size:12px;line-height:1.2}
+:root[data-theme] .dictation-field>.text-mic:hover{background:var(--theme-selection)}
+.dictation-field>.text-mic:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+:root[data-theme] .dictation-field[data-dictation-state=listening]>.text-mic{color:var(--theme-danger);border-color:var(--theme-danger)}
+.dictation-feedback{grid-column:1/-1;min-width:0;padding:10px;border:1px solid var(--line);border-radius:9px;background:var(--canvas);color:var(--ink);font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.dictation-feedback>button{margin:6px 6px 0 0;color:var(--ink);border:1px solid var(--line);background:var(--surface-raised);font-size:12px}
+.dictation-feedback .dictation-overflow{width:100%;margin-top:8px;color:var(--ink);background:var(--canvas);border:1px solid var(--line)}
+.graph-search-wrap .dictation-feedback{position:absolute;z-index:20;top:100%;left:0;width:max(100%,260px);max-width:calc(100vw - 24px)}

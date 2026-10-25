@@ -1,0 +1,14 @@
+node_modules/
+qa-output/
+data/
+Data/
+profiles/
+*-profile/
+.env
+.env.*
+*.tgz
+*.log
+*.tmp
+*.reanodes
+*.pem
+*.key

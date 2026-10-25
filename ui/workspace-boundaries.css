@@ -1,0 +1,47 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+/* One owner for the sidebar, toolbar, canvas and footer boundaries. */
+body:not(.legacy-view) #workspace-surface{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:0;overflow:hidden;isolation:isolate}
+body:not(.legacy-view) #workspace-surface.has-outline{grid-template-columns:var(--outline-width,245px) minmax(0,1fr)}
+body:not(.legacy-view) #workspace-map-tools{grid-column:1;grid-row:1;display:flex;align-items:center;flex-wrap:wrap;gap:6px;min-width:0;min-height:44px;padding:6px 8px;background:var(--canvas);border-bottom:1px solid var(--line);pointer-events:auto;backdrop-filter:none;z-index:3}
+body:not(.legacy-view) #workspace-canvas{grid-column:1;grid-row:2;overflow:hidden;isolation:isolate}
+body:not(.legacy-view) #workspace-surface.has-outline>:is(#workspace-map-tools,#workspace-canvas){grid-column:2}
+body:not(.legacy-view) #workspace-outline{grid-column:1;grid-row:1 / 3;margin:0;padding:0 8px 12px 0;min-height:0;min-width:0;overflow:auto;border-right:1px solid var(--line);background:var(--canvas);z-index:4}
+#workspace-outline .outline-heading{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0;padding:6px;min-height:44px;border-bottom:1px solid var(--line)}
+#workspace-outline .outline-heading>strong{font-size:.8125rem;min-width:0;overflow-wrap:anywhere}
+#workspace-outline #outline-follow{margin-left:auto;max-width:100%;white-space:normal}
+#workspace-list-toggle{display:inline-flex;align-items:center;justify-content:center;flex:none;width:32px;min-height:32px;padding:5px;border:1px solid var(--line);color:var(--muted)}
+#workspace-map-tools #workspace-list-toggle{margin:0}
+#workspace-list-toggle[aria-expanded=true]{background:var(--surface);border-color:var(--accent);color:var(--ink)}
+#workspace-map-tools #workspace-navigation{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:0;margin:0;min-width:0;flex:1}
+#workspace-map-tools #workspace-navigation>div{display:flex;align-items:center;flex-wrap:wrap;gap:5px;min-width:0;max-width:100%}
+#workspace-canvas-controls{display:flex;align-items:center;flex-wrap:wrap;gap:5px;min-width:0;max-width:100%}
+#workspace-canvas-controls .wire-style-control{display:flex;align-items:center;flex-wrap:wrap;gap:3px;min-width:0;max-width:100%}
+#workspace-canvas-controls button{min-width:0;white-space:normal;overflow-wrap:anywhere}
+#workspace-map-tools #workspace-count{flex:1;min-width:0;font-size:.6875rem;overflow-wrap:anywhere;margin:0;line-height:1.5}
+#workspace-map-tools #workspace-save{margin-left:auto;flex:none}
+#workspace-map-tools #bulk-node-actions{padding:0;flex-basis:100%;min-width:0;max-width:100%}
+#outline-resize{z-index:5}
+/* The empty invitation spans the whole surface without changing sidebar prefs. */
+.empty-workspace:has(#welcome:not([hidden])) #workspace-surface #workspace-canvas{grid-column:1/-1;grid-row:1/-1}
+
+
+/* Keep the top clean; the existing previews live in a floating bottom tray. */
+body:not(.legacy-view) #workspace-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 8px}
+.workspace-view-tools{display:flex;flex-direction:row;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:8px;min-width:0}
+#workspace-presets{position:absolute;left:50%;transform:translateX(-50%);bottom:76px;z-index:44;width:max-content;max-width:calc(100% - 24px);padding:7px;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--theme-shadow);overflow:auto;overscroll-behavior:contain}
+#workspace-presets #map-layout.layout-picker{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;width:790px;max-width:100%}
+#workspace-presets .layout-choice{flex:0 1 auto;max-width:none;min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;padding:5px 8px;min-height:36px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--muted);font-size:11px}
+#workspace-presets .layout-choice svg{width:30px;height:24px}
+#workspace-presets .layout-choice[aria-pressed=true]{border-color:var(--accent);color:var(--ink);background:var(--theme-selection)}
+#workspace-presets .layout-choice .layout-leaf{fill:var(--surface)}
+#workspace-outline{padding-bottom:calc(var(--nodes-navigation-height,40px) + 28px)!important}
+#theme-palette-toggle[aria-expanded=true]{display:none}
+#theme-strip{display:flex;flex-wrap:wrap;align-items:center;gap:7px;width:max-content;max-width:calc(100% - 24px);border-radius:24px;padding:6px 9px}
+#theme-strip .theme-strip-items{flex:0 1 auto;min-width:0;max-width:100%;gap:4px}
+#theme-strip .theme-current-name{flex:1 1 auto;font-size:11px}
+#theme-strip #theme-strip-hide{flex:none}
+body.legacy-view #workspace-presets{display:none}
+@media(max-width:900px){body:not(.legacy-view) #workspace-heading{flex-wrap:wrap}.workspace-view-tools{justify-content:flex-start}}
+@media(max-width:600px){#workspace-presets #map-layout.layout-picker{width:100%;gap:4px}#workspace-presets .layout-choice{flex:1 0 calc(20% - 4px);flex-direction:column;padding:4px 2px;gap:1px;min-height:43px;font-size:10px}#workspace-presets .layout-choice svg{width:29px;height:20px}}

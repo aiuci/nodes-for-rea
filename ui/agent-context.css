@@ -1,0 +1,41 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+#agent-context-input{margin:12px 0;font-size:13px}
+#agent-panel{max-height:76vh;overflow:auto;flex-shrink:0}
+.agent-context-drop{border:1px dashed var(--line);border-radius:9px;padding:12px;background:var(--canvas);display:flex;flex-direction:column;gap:7px}
+.agent-context-drop>span{color:var(--muted);font-size:12px}
+.agent-context-drop.dragging{border-color:var(--accent);background:var(--theme-selection)}
+.agent-context-buttons{display:flex;gap:8px;flex-wrap:wrap}
+#agent-context-url-row{margin-top:10px}#agent-context-url-row>div{display:flex;gap:8px;margin-top:5px}
+#agent-context-url{flex:1;min-width:0;background:var(--canvas);color:var(--ink);border:1px solid var(--line);padding:8px;border-radius:7px}
+#agent-context-items{list-style:none;padding:0;margin:9px 0;display:flex;flex-direction:column;gap:6px}
+#agent-context-items li{display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:5px 8px}
+#agent-context-items li>span{flex:1;min-width:0;overflow-wrap:anywhere}#agent-context-items small{color:var(--muted);font-size:11px}
+#agent-context-items button{border:0;font-size:19px;padding:0 6px;min-height:28px}
+#agent-context-status{font-size:12px;color:var(--muted);margin:7px 0}
+@media(max-width:600px){header .brand{min-width:0;flex:1}header .brand>span:not(#subject-name){white-space:normal;overflow-wrap:anywhere;font-size:12px;line-height:1.1}header nav{flex:none}}
+
+/* The same source actions sit beside the goal; advanced help stays optional. */
+#agent-panel .agent-goal-tools{display:grid;grid-template-columns:repeat(2,36px);gap:4px;flex-shrink:0}
+#agent-panel .agent-goal-tools>button{display:inline-flex;align-items:center;justify-content:center;width:36px;min-width:36px;height:36px;min-height:36px;padding:6px;border:1px solid var(--line);border-radius:8px;background:var(--surface-raised);color:var(--ink)}
+#agent-panel .agent-goal-tools>button:hover{background:var(--theme-hover);border-color:var(--line)}
+#agent-panel .agent-goal-tools>button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+#agent-panel .agent-goal-tools>button:disabled{opacity:.5}
+#agent-panel .agent-goal-tools #agent-mic{padding:3px}
+#agent-panel .agent-goal-tools #agent-mic-action{font-size:9px}
+#agent-goal{min-width:0;flex:1}
+#agent-panel .agent-goal-entry.dragging{border-color:var(--accent);background:var(--theme-selection)}
+#agent-investigation-target{font-size:11px;line-height:1.4;color:var(--muted);margin:0 0 6px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#agent-context-input{font-size:12px;margin:4px 0}
+#agent-context-items,#agent-project-items{list-style:none;padding:0;display:flex;flex-direction:row;flex-wrap:wrap;gap:5px;margin:5px 0;max-height:98px;overflow:auto;overflow-x:hidden;overscroll-behavior:contain}
+#agent-context-items:empty,#agent-project-items:empty{display:none}
+#agent-context-items li,#agent-project-items li{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:13px;padding:3px 7px;background:var(--canvas);min-width:0;max-width:100%;font-size:11px}
+#agent-project-items li{width:100%;border-color:var(--line)}
+#agent-context-items li>span,#agent-project-items li>span{flex:1;min-width:0;max-width:290px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#agent-context-items small,#agent-project-items small{font-size:10px;color:var(--muted);white-space:nowrap}
+#agent-context-items button,#agent-project-items button{border:0;min-height:26px;min-width:26px;padding:0 4px;font-size:17px}
+#agent-context-status{font-size:11px;line-height:1.4;margin:3px 0;color:var(--muted)}
+#agent-context-status:empty{display:none}
+#agent-context-url-row{margin:4px 0}
+@media(max-width:500px){#agent-context-items li>span,#agent-project-items li>span{max-width:185px}#agent-context-items small,#agent-project-items small{font-size:9px}}

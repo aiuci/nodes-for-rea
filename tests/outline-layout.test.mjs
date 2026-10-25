@@ -1,0 +1,13 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import {cleanOutlineWidth,displayedOutlineWidth,outlineLimits} from '../lib/outline-layout.mjs';
+import {cleanWorkspace} from '../lib/workspace.mjs';
+import {serializeWorkspaceMap} from '../lib/workspace-map.mjs';
+import {InvestigationStore} from '../lib/investigation.mjs';
+import {exportInvestigation,importInvestigation} from '../lib/archive.mjs';
+test('outline width is finite, bounded and compatible with old workspaces',()=>{assert.equal(cleanOutlineWidth(undefined),245);assert.equal(cleanOutlineWidth(NaN),245);assert.equal(cleanOutlineWidth(-5),160);assert.equal(cleanOutlineWidth(1e9),900);assert.equal(cleanWorkspace({outlineWidth:508}).outlineWidth,508);});
+test('displayed width responds to viewport while keeping the saved preference recoverable',()=>{const preferred=700;assert.equal(displayedOutlineWidth(preferred,1400),700);assert.ok(displayedOutlineWidth(preferred,390)<preferred);assert.ok(outlineLimits(390).max<390);assert.equal(displayedOutlineWidth(preferred,1400),preferred);});
+test('outline width survives reopen and portable archive alongside graph and draft context',async t=>{const root=await fs.mkdtemp(path.join(os.tmpdir(),'rea-outline-'));t.after(()=>fs.rm(root,{recursive:true,force:true}));const store=new InvestigationStore(path.join(root,'data')),state=await store.create();state.messages=[{id:'a',role:'assistant',features:[{name:'A long feature name',investigate:'Inspect its boundary'}]}];await store.save(state);await store.updateWorkspace(state.id,{workspace:{...state.workspace,outlineWidth:520},draft:'Keep the question',draftContext:{featureName:'A long feature name',messageId:'a'}});const read=await store.read(state.id);assert.equal(read.workspace.outlineWidth,520);assert.equal(serializeWorkspaceMap(read).outlineWidth,520);await fs.mkdir(path.join(root,'exports'));const folder=await exportInvestigation(store,state.id,path.join(root,'exports'),{}),imported=await importInvestigation(new InvestigationStore(path.join(root,'imported')),folder);assert.equal(imported.state.workspace.outlineWidth,520);assert.equal(imported.state.draftContext.featureName,'A long feature name');assert.deepEqual(imported.state.messages,read.messages);});

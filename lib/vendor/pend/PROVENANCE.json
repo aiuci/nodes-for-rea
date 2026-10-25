@@ -1,0 +1,10 @@
+{
+  "name": "pend",
+  "version": "1.2.0",
+  "source": {
+    "type": "git",
+    "url": "git://github.com/andrewrk/node-pend.git"
+  },
+  "originalSha256": "4b991290680d9027dd786493c6e816900355956d88afb6ae4d97b5ac5a3ee0f5",
+  "changes": "CommonJS extension and relative dependency paths only; license preserved"
+}

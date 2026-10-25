@@ -1,0 +1,56 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+#node-panel-frame{position:absolute;z-index:6;min-width:0;min-height:0}
+#node-panel-frame[hidden],body.legacy-view #node-panel-frame{display:none}
+#node-panel-frame>#node-workbench{position:relative;inset:auto;width:100%;height:100%;max-width:none;max-height:none;box-sizing:border-box;overflow:auto;resize:none}
+#node-panel-frame .node-heading{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:start;cursor:grab;gap:8px;touch-action:none;padding-right:0}
+#node-panel-frame .node-heading #node-owner{min-width:0;flex:1;font-size:15px}
+#node-panel-frame .node-heading button{flex-shrink:0;cursor:pointer;min-height:30px;padding:3px 6px}
+#panel-move{font-size:18px;color:#a8bbd2;cursor:grab!important;border:0;background:transparent}
+#panel-menu-trigger{min-width:32px;border-radius:18px;font-size:18px;background:#172737;border-color:#52657d;color:#c5d3e7}
+.panel-resize-edge{position:absolute;z-index:9;touch-action:none}
+.panel-resize-edge[hidden]{display:none}
+.edge-east,.edge-west{top:24px;bottom:28px;width:12px;cursor:ew-resize}
+.edge-east{right:-5px}.edge-west{left:-5px}
+.edge-north,.edge-south{left:24px;right:28px;height:12px;cursor:ns-resize}
+.edge-north{top:-5px}.edge-south{bottom:-5px}
+.panel-resize-edge:after{content:'';position:absolute;border-radius:3px;background:#68809a}
+.edge-east:after,.edge-west:after{width:3px;height:54px;top:calc(50% - 27px);left:4px}
+.edge-north:after,.edge-south:after{height:3px;width:54px;left:calc(50% - 27px);top:4px}
+.panel-resize-edge:hover:after,.panel-resize-edge:focus-visible:after{background:#d3e1ef}
+.panel-resize-edge:focus-visible{outline:2px solid #c3b6ff}
+#panel-resize{position:absolute;right:1px;bottom:1px;z-index:8;min-width:26px;min-height:26px;padding:0;border:0;border-radius:7px 0 13px 0;background:#172534;color:#abc1dd;cursor:nwse-resize;touch-action:none}
+#panel-bottom-resize{position:absolute;left:20px;right:20px;top:-6px;height:14px;z-index:8;cursor:ns-resize;touch-action:none}
+#panel-bottom-resize:after{content:'';position:absolute;width:70px;height:4px;left:calc(50% - 35px);top:5px;border-radius:4px;background:#8194ad}
+#panel-bottom-resize:hover:after,#panel-bottom-resize:focus-visible:after{background:#d0dff2}
+#panel-bottom-resize:focus-visible{outline:2px solid #c3b6ff;outline-offset:2px}
+#node-panel-frame[data-dock=bottom] .node-heading{cursor:default}
+#node-panel-frame[data-dock=bottom]>#node-workbench{border-radius:13px 13px 5px 5px;padding-inline:24px}
+#node-panel-frame[data-dock=bottom] #workspace-inspector{max-width:960px;margin-inline:auto}
+#node-panel-frame[data-dock=bottom] #workspace-inspector p,#node-panel-frame[data-dock=bottom] #workspace-inspector blockquote{font-size:15px;line-height:1.75}
+#node-panel-frame.panel-dragging .node-heading,#node-panel-frame.panel-dragging #panel-move{cursor:grabbing!important;user-select:none}
+#node-panel-frame.panel-dragging{user-select:none}
+#node-panel-frame #workspace-inspector{overflow-wrap:anywhere}
+@media(max-width:600px){#node-panel-frame[data-dock=bottom]>#node-workbench{padding-inline:14px}#node-panel-frame .node-heading{gap:4px}#node-panel-frame .node-heading #node-owner{font-size:13px}#node-panel-frame .node-heading button{padding:3px 5px}}
+/* The panel is the complete-title reading surface for compact map nodes. */
+#node-panel-frame .node-heading #node-owner{display:block;overflow:visible;text-overflow:clip;white-space:normal;overflow-wrap:anywhere;word-break:normal;line-height:1.5;-webkit-line-clamp:unset;max-width:100%}
+.target-recovery h2{font-size:19px!important;line-height:1.35}
+.target-recovery button{display:block;max-width:100%;white-space:normal;text-align:left;margin:10px 0}
+.target-candidate{border:1px solid #405064;border-radius:9px;padding:12px;margin:14px 0}
+.target-candidate h3{font-size:15px;margin:0 0 8px}
+.target-location,.target-recovery details p{overflow-wrap:anywhere;font-size:12px}
+.target-recovery details{margin-top:18px}
+
+.target-recovery pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;line-height:1.5}
+
+/* One native button owns both the visible control and the full card hit area. */
+.target-candidate{position:relative;border-color:var(--line,#405064)}
+.target-candidate[data-recommended=true]{border-color:var(--accent,#b9cde4)}
+.target-candidate>.target-select{position:static}
+.target-candidate>.target-select::after{content:'';position:absolute;inset:0;border-radius:9px;z-index:1;cursor:pointer}
+.target-candidate:has(>.target-select:enabled):hover{border-color:var(--accent,#b9cde4)}
+.target-candidate:has(>.target-select:focus-visible){outline:2px solid var(--focus,var(--accent,#b9cde4));outline-offset:3px}
+.target-candidate:has(>.target-select:disabled){opacity:.65}
+.target-candidate>.target-select:disabled::after{cursor:default}
+.target-candidate :is(a,button:not(.target-select),input,select,textarea,details){position:relative;z-index:2}

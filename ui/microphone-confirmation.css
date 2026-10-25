@@ -1,0 +1,8 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+.microphone-dialog{--microphone-action-ink:var(--surface)}
+:root[data-theme] .microphone-dialog .delete-dialog-icon{color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--surface));border-color:var(--line)}
+:root[data-theme] .microphone-dialog .microphone-confirm{background:var(--accent);color:var(--microphone-action-ink);border-color:var(--accent);font-weight:650}
+:root[data-theme] .microphone-dialog .microphone-confirm:hover{background:var(--accent);color:var(--microphone-action-ink)}
+:root[data-theme=dark] .microphone-dialog{--microphone-action-ink:var(--canvas)}

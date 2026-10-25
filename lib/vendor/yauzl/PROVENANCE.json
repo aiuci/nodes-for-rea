@@ -1,0 +1,10 @@
+{
+  "name": "yauzl",
+  "version": "2.10.0",
+  "source": {
+    "type": "git",
+    "url": "https://github.com/thejoshwolfe/yauzl.git"
+  },
+  "originalSha256": "583c4554718cbaee5189d0e28dbd7480a0766e785304e3bcd2acad80b2cb6497",
+  "changes": "CommonJS extension and relative dependency paths only; license preserved"
+}

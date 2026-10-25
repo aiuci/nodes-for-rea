@@ -1,0 +1,16 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+.feedback-icon{width:20px;height:20px;flex:0 0 20px;vertical-align:middle;display:inline-block;color:currentColor}
+.feedback-heading{display:flex;align-items:center;gap:10px;line-height:1.4;margin:0 0 12px;overflow-wrap:anywhere}
+:root[data-theme] .user-error,:root[data-theme] .feedback-heading,.user-error .feedback-message,.user-error pre{color:var(--ink)}
+.target-recovery .feedback-heading .feedback-icon{width:24px;height:24px;flex-basis:24px}
+.recovery-primary,.recovery-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;max-width:100%;white-space:normal;text-align:start}
+:root[data-theme] button.recovery-primary{background:var(--theme-selection,#e8e7f2);color:var(--ink,#25263e);border:1px solid var(--accent,#5263d8);font-weight:650;padding:10px 14px;transition:none}
+.recovery-primary:focus-visible,.recovery-secondary:focus-visible,.user-error summary:focus-visible{outline:2px solid var(--accent,#5263d8);outline-offset:3px}
+.user-error{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;line-height:1.5;min-width:0}
+.user-error[hidden]{display:none}.user-error>.feedback-heading,.user-error>.feedback-message{flex-basis:100%;margin:0}
+.user-error details{flex-basis:100%;min-width:0}.user-error pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:180px;overflow:auto;font:inherit}
+#workspace-notice.user-error{padding:12px 16px;border-inline-start:3px solid var(--accent,#5263d8)}
+.target-recovery .recovery-primary{display:flex;margin:16px 0 12px}
+@media(max-width:600px){.user-error button,.target-recovery .recovery-primary{width:100%}}

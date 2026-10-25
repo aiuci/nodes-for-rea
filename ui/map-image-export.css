@@ -1,0 +1,8 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+.map-image-dialog{max-width:560px}
+.map-image-dialog label{display:flex;flex-direction:column;gap:7px;margin:20px 0;font-size:13px;color:#dce6f3}
+.map-image-dialog input,.map-image-dialog select{width:100%;min-height:38px;padding:8px 10px;background:#101923;color:#edf3fb;border:1px solid #53657a;border-radius:8px}
+.map-image-dialog .map-image-watermark{font-size:12px;color:#9eafc4}
+.map-image-buttons{display:flex;gap:10px;justify-content:flex-end;margin-top:22px}

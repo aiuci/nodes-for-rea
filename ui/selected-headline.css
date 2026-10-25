@@ -1,0 +1,9 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+#selected-node-headline{position:absolute;z-index:6;pointer-events:none;user-select:none;box-sizing:border-box;margin:0;padding:0;border:0;background:none;box-shadow:none;color:var(--ink,inherit);font:500 17px/1.45 'Segoe UI',system-ui,sans-serif;letter-spacing:-.015em;text-align:center;overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;max-height:4.35em;opacity:0;transition:opacity 140ms ease}
+#selected-node-headline.visible{opacity:1}
+#node-panel-frame .node-heading #node-owner{font-size:20px;font-weight:600;line-height:1.45;letter-spacing:-.018em;white-space:normal;overflow:visible;max-height:none;-webkit-line-clamp:unset}
+#node-panel-frame #workspace-inspector h2{line-height:1.5}
+@media(prefers-reduced-motion:reduce){#selected-node-headline{transition:none}}
+

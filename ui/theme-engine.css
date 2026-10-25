@@ -1,0 +1,172 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+/* A skin over the existing workspace. No layout, camera or graph geometry rules. */
+:root[data-theme] {color-scheme:light;font-family:var(--theme-font);--theme-warning:#8b5b17;--theme-danger:#aa3654;--theme-success:#34765f;--theme-info:var(--accent)}
+:root[data-theme=dark] {color-scheme:dark;--theme-warning:#e6bb7a;--theme-danger:#f0a6b8;--theme-success:#92d4b9}
+:root[data-theme] body {background:var(--canvas);color:var(--ink);font-family:var(--theme-font)}
+:root[data-theme] header {background:var(--surface);border-color:var(--line)}
+:root[data-theme] #main {background:var(--canvas)}
+#main::before {content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:var(--theme-atmosphere-strength);background:var(--theme-atmosphere,none)}
+:root[data-atmosphere=pearl] {--theme-atmosphere:radial-gradient(ellipse 90% 80% at var(--theme-light-one-x) var(--theme-light-one-y),var(--theme-a),transparent 72%),radial-gradient(ellipse 75% 90% at var(--theme-light-two-x) var(--theme-light-two-y),var(--theme-b),transparent 75%),radial-gradient(ellipse 80% 70% at var(--theme-light-three-x) var(--theme-light-three-y),var(--theme-c),transparent 76%)}
+:root[data-atmosphere=wash] {--theme-atmosphere:linear-gradient(var(--theme-gradient-angle),var(--theme-a),transparent 48%,var(--theme-b)),radial-gradient(ellipse 70% 90% at 85% 90%,var(--theme-c),transparent 70%)}
+:root[data-atmosphere=silver] {--theme-atmosphere:radial-gradient(ellipse 110% 100% at 90% -48%,transparent 75%,#ffffffda 75.3%,var(--theme-a) 81%,transparent 91%),radial-gradient(ellipse 95% 105% at 115% -35%,transparent 79%,var(--theme-c) 79.4%,#ffffffbb 86%,transparent 97%),linear-gradient(calc(var(--theme-gradient-angle) - 92deg),transparent 5%,var(--theme-a) 6%,#ffffffaa 19%,transparent 25%,transparent 38%,#ffffff99 39%,var(--theme-c) 47%,transparent 56%)}
+:root[data-atmosphere=night] {--theme-atmosphere:radial-gradient(ellipse 80% 100% at 3% 40%,var(--theme-a),transparent 75%),radial-gradient(ellipse 70% 90% at 95% 90%,var(--theme-b),transparent 80%)}
+:root[data-atmosphere=velvet] {--theme-atmosphere:radial-gradient(ellipse 130% 110% at -20% -30%,var(--theme-a),transparent 70%),linear-gradient(var(--theme-gradient-angle),transparent 36%,var(--theme-b) 69%,var(--theme-c))}
+:root[data-atmosphere=plain] {--theme-atmosphere:none}
+:root[data-atmosphere=contour] {--theme-atmosphere:radial-gradient(ellipse 240px 340px at -160px 20%,transparent 99.5%,var(--theme-a) 99.7%,var(--theme-a) 100%,transparent 100.2%),radial-gradient(ellipse 280px 410px at calc(100% + 190px) 88%,transparent 99.5%,var(--theme-a) 99.7%,var(--theme-a) 100%,transparent 100.2%)}
+:root[data-atmosphere=contour] #main::before {mask-image:linear-gradient(to right,#000,transparent 10%,transparent 90%,#000)}
+:root[data-theme] #workspace-canvas {background:transparent}
+:root[data-theme] body:not(.legacy-view) :is(#workspace-heading,#workspace-notice,#workspace-map-tools,#activity) {background:color-mix(in srgb,var(--canvas) 58%,transparent);backdrop-filter:blur(3px)}
+:root[data-theme] body:not(.legacy-view) #workspace-outline {background:var(--surface);border-color:var(--line)}
+:root[data-theme] #workspace-outline .outline-heading {background:var(--surface);color:var(--muted);border-bottom:1px solid var(--line)}
+:root[data-theme] :is(#subject-name,#workspace-subtitle,#workspace-count,#workspace-navigation,.layout-controls,.wire-style-control,.outline-note,.outline-row>small,.history-entry small) {color:var(--muted);border-color:var(--line)}
+:root[data-theme] :is(button,input,select,textarea,summary) {font-family:var(--theme-font)}
+:root[data-theme] button {color:var(--ink);border-color:var(--line);transition:background-color calc(140ms * var(--theme-motion-scale)) var(--theme-ease),border-color calc(140ms * var(--theme-motion-scale)) var(--theme-ease),box-shadow calc(140ms * var(--theme-motion-scale)) var(--theme-ease)}
+:root[data-theme] button:hover {background:var(--theme-hover);color:var(--ink);border-color:var(--accent)}
+:root[data-theme] :is(button,input,select,textarea,summary):focus-visible {outline-color:var(--focus)}
+:root[data-theme] :is(button.primary,.workspace-primary) {background:var(--accent);color:var(--surface);border-color:var(--accent)}
+:root[data-theme=dark] :is(button.primary,.workspace-primary) {color:var(--canvas)}
+:root[data-theme] :is(button.primary,.workspace-primary):hover {filter:brightness(.95)}
+:root[data-theme] :is(#graph-search,#message,input,select,textarea) {background:var(--canvas);color:var(--ink);border-color:var(--line);accent-color:var(--accent)}
+:root[data-theme] :is(#graph-search,#message,input,textarea)::placeholder {color:var(--muted)}
+:root[data-theme] :is(.layout-choice,.workspace-view-controls button,#workspace-navigation button,.layout-controls select,#workspace-arrange-actions #workspace-fit) {background:var(--surface);color:var(--muted);border-color:var(--line)}
+:root[data-theme] .layout-choice .layout-leaf {fill:var(--surface)}
+:root[data-theme] :is(.layout-choice[aria-pressed=true],.workspace-view-controls button[aria-pressed=true],#workspace-navigation button[aria-pressed=true],#outline-follow[aria-pressed=true],#workspace-map-tools #workspace-list-toggle[aria-expanded=true]) {background:var(--theme-selection);color:var(--accent);border-color:var(--accent)}
+:root[data-theme] .layout-choice[aria-pressed=true] .layout-leaf {fill:var(--theme-selection)}
+:root[data-theme] :is(.map-node,.growing-node,.node-finding,.node-direction,.node-source,.node-discovery,.node-inventory) {background:var(--surface);color:var(--ink);border-color:color-mix(in srgb,var(--topic) 48%,var(--line));border-radius:var(--theme-radius);box-shadow:var(--theme-shadow)}
+:root[data-theme] :is(.map-node,.growing-node):hover {background:var(--theme-hover);border-color:var(--topic);box-shadow:var(--theme-shadow)}
+:root[data-theme] :is(.map-node,.growing-node).selected {background:var(--theme-selection);border-color:var(--topic);box-shadow:0 0 0 1px var(--topic),var(--theme-shadow)}
+:root[data-theme] .growing-node-open {color:var(--ink)}
+:root[data-theme] .growing-node-open:hover {background:transparent}
+:root[data-theme] .growing-node-open strong {color:var(--ink);font-weight:var(--theme-weight)}
+:root[data-theme] :is(.growing-node-open small,.growing-node-open>span,.growing-node-kind,.node-run-status) {color:var(--muted)}
+:root[data-theme] .growing-node-open .node-symbol {color:var(--theme-icon-color);background:var(--theme-icon-bg);border:var(--theme-icon-border);border-radius:6px}
+:root[data-theme] .growing-node[data-node-id=core],:root[data-theme] .growing-node[data-node-id=core]:hover {border-radius:999px;background:var(--surface);border-color:var(--accent);box-shadow:var(--theme-shadow)}
+:root[data-theme] .growing-node[data-node-id=core] :is(.node-symbol,strong) {color:var(--ink)}
+:root[data-theme] :is(.growing-node>.node-fold,.growing-node .node-play,.node-local-controls .node-play,.growing-node-tools button,.node-local-controls button,.node-draft-marker,.map-count,#panel-menu-trigger,#panel-resize) {background:var(--theme-selection);color:var(--muted);border-color:var(--line)}
+:root[data-theme] .growing-node .node-local-controls .node-menu-trigger {background:var(--surface);color:var(--muted);border-color:var(--line)}
+:root[data-theme] :is(.growing-node .node-stop,#node-workbench #stop) {background:color-mix(in srgb,var(--theme-danger) 12%,var(--surface));color:var(--theme-danger);border-color:var(--theme-danger)}
+/* Shared, bounded screen-space widths: stronger overview, finer detail. */
+:root[data-theme] :is(#map-wires,#node-connection) {--map-wire-screen-width:clamp(.65px,min(calc(var(--theme-wire-width) * var(--map-wire-factor,1)),var(--map-wire-ceiling,3px)),3px);--map-wire-screen-dots:clamp(1px,min(calc(var(--theme-wire-dots) * var(--map-wire-factor,1)),calc(var(--map-wire-ceiling,3px) + .3px)),3.6px)}
+:root[data-theme] #map-wires>.map-wire,:root[data-theme] #node-connection>path {vector-effect:non-scaling-stroke;stroke-width:calc(var(--map-wire-screen-width) / var(--map-camera-scale,1));opacity:var(--theme-wire-opacity);stroke-linecap:round;stroke-linejoin:round}
+:root[data-theme] #map-wires>.map-wire.orbit-related {stroke-width:calc(var(--map-wire-screen-width) * var(--theme-emphasis) / var(--map-camera-scale,1));opacity:1}
+:root[data-theme] #workspace-canvas[data-layout=river] #map-wires>.map-wire.river-main-wire {stroke-width:calc(min(3px,var(--map-wire-screen-width) * 1.6) / var(--map-camera-scale,1));opacity:1}
+:root[data-theme] #workspace-canvas[data-layout=orbit] #map-wires>.map-wire:not(.growth-wire) {opacity:var(--theme-wire-opacity)}
+:root[data-theme] #map-wires[data-dots=true]>.map-wire:not(.comparison-wire),:root[data-theme] #workspace-canvas[data-dots=true] #node-connection>path {stroke-width:calc(var(--map-wire-screen-dots) / var(--map-camera-scale,1));stroke-dasharray:.01 calc(5.5 / var(--map-camera-scale,1));stroke-linecap:round}
+:root[data-theme] #map-wires stop {stop-color:var(--wire-color)}
+:root[data-wire-finish=tonal] #map-wires>.map-wire.orbit-related,:root[data-wire-finish=tonal] #node-connection>path {stroke:var(--accent)}
+/* A dark edge preserves continuity beneath bright chrome reflections. Same route,
+   no filters or extra animation; both strokes compensate for the HTML camera. */
+:root[data-theme] #map-wires>.map-wire-contour,:root[data-theme] #node-connection>.map-wire-contour {vector-effect:non-scaling-stroke;stroke-width:calc((var(--map-wire-screen-width) + 1px * var(--map-wire-factor,1)) / var(--map-camera-scale,1));stroke-linecap:round;stroke-linejoin:round;opacity:var(--theme-wire-opacity);pointer-events:none}
+:root[data-theme] #map-wires>.map-wire-contour.orbit-related {stroke-width:calc((var(--map-wire-screen-width) * var(--theme-emphasis) + 1px * var(--map-wire-factor,1)) / var(--map-camera-scale,1))}
+:root[data-theme] #map-wires[data-dots=true]>.map-wire-contour:not(.comparison-wire),:root[data-theme] #workspace-canvas[data-dots=true] #node-connection>.map-wire-contour {stroke-width:calc((var(--map-wire-screen-dots) + 1px * var(--map-wire-factor,1)) / var(--map-camera-scale,1));stroke-dasharray:.01 calc(5.5 / var(--map-camera-scale,1))}
+:root[data-theme] #map-arrangement-guides [data-orbit-core],:root[data-theme] #map-arrangement-guides [data-orbit-depth] {stroke:var(--muted);stroke-opacity:.5}
+:root[data-theme] #map-arrangement-guides [data-assembly-id]>path:nth-of-type(2) {fill:var(--surface);fill-opacity:.78}
+:root[data-theme] .outline-row.selected {background:var(--theme-selection)}
+:root[data-theme] :is(#outline-follow,#workspace-map-tools #workspace-list-toggle,#panel-move,.outline-heading,#workspace-outline .outline-actions,#outline-select-nodes) {color:var(--muted);border-color:var(--line)}
+:root[data-theme] :is(#outline-resize:after,#panel-bottom-resize:after,.panel-resize-edge:after) {background:var(--line)}
+:root[data-theme] :is(#workspace-save,#workspace-outline .outline-new) {color:var(--theme-success)}
+:root[data-theme] #workspace-save[data-failed=true] {color:var(--theme-danger)}
+:root[data-theme] #workspace-save[data-pending=true] {color:var(--muted)}
+:root[data-theme] :is(#node-workbench,.node-heading,#node-inspector,#workspace-inspector,.menu-items,.history-panel,#graph-search-results,.workspace-dialog,#connection-dialog,#rea-dialog,.accordion-preview) {background:var(--surface);color:var(--ink);border-color:var(--line);box-shadow:var(--theme-shadow);border-radius:var(--theme-radius)}
+:root[data-theme] :is(#node-workbench .node-heading,#node-workbench #workspace-inspector) {box-shadow:none}
+:root[data-theme] #node-workbench #workspace-inspector {background:transparent}
+:root[data-theme] :is(#workspace-inspector h3,.cluster-heading strong,#welcome h2,.claim-support blockquote) {color:var(--ink)}
+:root[data-theme] :is(#workspace-inspector p,#workspace-inspector small,#workspace-inspector summary,.material-limit,.inspector-path,#node-close,#reader-return,#node-draft,.node-status,.node-more>summary,#node-root-tools summary) {color:var(--muted)!important}
+:root[data-theme] :is(.basis-label,.guidance-label) {color:var(--accent)!important;border-color:color-mix(in srgb,var(--accent),var(--line))}
+/* Finding certainty is explicit text, never color alone. Keep palette ownership
+   with the selected theme; the same badge appears on cards and in reading. */
+:root[data-theme] .finding-category-badge {display:inline-flex;align-items:center;gap:5px;width:fit-content;max-width:100%;border:1px solid var(--line);border-radius:12px;padding:2px 7px;background:var(--canvas);color:var(--ink)!important;font-size:12px;font-weight:600;line-height:1.45;white-space:normal;overflow-wrap:anywhere}
+:root[data-theme] .finding-category-badge>span {flex:none;font-size:13px}
+:root[data-theme] .node-label .map-finding-category {display:flex;margin-top:5px;font-size:12px;line-height:1.4}
+:root[data-theme] #workspace-outline .outline-finding-category {display:flex;margin-top:4px;font-size:11px;padding:1px 6px;line-height:1.4}
+:root[data-theme] #workspace-inspector .finding-category-detail {display:block;margin:6px 0 10px;font-size:12px;line-height:1.55;color:var(--muted)!important}
+:root[data-theme] #workspace-inspector .finding-reading-row {border-top:1px solid var(--line);margin-top:16px;padding-top:2px}
+:root[data-theme] #workspace-inspector .claim-support>.basis-label {margin:6px 0 0 8px}
+:root[data-theme] #workspace-inspector .finding-category-key {margin-top:18px}
+:root[data-theme] :is(.node-guidance .guidance-hint,.draft-bar,.depth-controls label,.depth-controls #depth-progress,#input-help) {color:var(--muted)!important}
+:root[data-theme] :is(.node-guidance,#node-draft,#node-root-tools,.node-more[open],.claim-support,.comparison,.workspace-menu-heading,#document-info) {border-color:var(--line)}
+:root[data-theme] :is(#workspace-inspector pre,.share-snapshot,#connection-dialog pre,#rea-dialog pre,.target-candidate,.share-summary,.share-actions,#workspace-menu #node-settings .menu-items) {background:var(--canvas);color:var(--ink);border-color:var(--line)}
+:root[data-theme] :is(.text-button,.connection-link,.feature-list-row small) {color:var(--accent)}
+:root[data-theme] :is(.feature-list-row span,.workspace-menu-heading,#document-info,.workspace-dialog p,.workspace-dialog small,#connection-dialog p,#connection-dialog summary,#connection-dialog .connection-note,#rea-dialog p,#rea-dialog summary,.document-review,.share-options small,.share-evidence-row small) {color:var(--muted)}
+:root[data-theme] :is(#composer,#node-workbench #composer,.draft-bar select,.draft-bar option) {background:var(--surface);color:var(--ink);border-color:var(--line)}
+:root[data-theme] :is(.workspace-dialog,#connection-dialog,#rea-dialog)::backdrop {background:color-mix(in srgb,var(--ink) 24%,transparent)}
+:root[data-theme] #workspace-notice {color:var(--muted);border-color:var(--accent)}
+:root[data-theme] #node-update {background:color-mix(in srgb,var(--theme-warning) 9%,var(--surface));border-color:var(--theme-warning)}
+:root[data-theme] #node-update :is(p,button) {color:var(--theme-warning);background:transparent}
+:root[data-theme] #discovery-feedback {background:var(--theme-selection);border-color:var(--accent)}
+:root[data-theme] :is(#discovery-elapsed,#discovery-phase) {color:var(--muted)}
+:root[data-theme] #discovery-feedback[data-state=finished] {background:color-mix(in srgb,var(--theme-success) 10%,var(--surface));border-color:var(--theme-success)}
+:root[data-theme] #discovery-feedback[data-state=finished][data-outcome=boundary] {background:color-mix(in srgb,var(--theme-warning) 10%,var(--surface));border-color:var(--theme-warning)}
+:root[data-theme] :is(.history-panel .history-delete,#history-delete-selected:not(:disabled)) {color:var(--theme-danger)}
+:root[data-theme] .radial-action-menu,:root[data-theme] .node-context-menu.radial-action-menu {background:none;border:0;box-shadow:none}
+:root[data-theme] .radial-action-menu button.radial-menu-item {background:var(--surface);color:var(--ink);border-color:color-mix(in srgb,var(--accent) 42%,var(--line));border-radius:clamp(12px,var(--theme-radius),16px);box-shadow:0 5px 16px color-mix(in srgb,var(--ink) 10%,transparent),inset 0 1px 0 color-mix(in srgb,var(--surface) 75%,white 25%);animation-duration:var(--theme-menu-time);animation-timing-function:var(--theme-ease)}
+:root[data-theme] .radial-action-menu button.radial-menu-item.primary {background:color-mix(in srgb,var(--action-color) 12%,var(--surface));color:var(--ink)}
+:root[data-theme] .radial-action-menu button.radial-menu-item:hover {background:color-mix(in srgb,var(--action-color) 17%,var(--surface));color:var(--ink)}
+:root[data-theme] .radial-action-menu button.radial-menu-item:disabled {background:var(--surface);color:var(--muted);border-color:var(--line);box-shadow:0 2px 7px color-mix(in srgb,var(--ink) 5%,transparent)}
+:root[data-theme] .radial-action-menu button.radial-menu-hub {background:var(--surface);color:var(--muted);border-color:var(--line)}
+:root[data-theme] .radial-menu-wires path {animation-duration:var(--theme-line-time)}
+:root[data-theme] .node-activity-ring {animation-duration:var(--theme-activity-time);filter:drop-shadow(0 0 2px var(--topic))}
+:root[data-theme] .growing-node.running {border-color:var(--topic);box-shadow:0 0 0 2px color-mix(in srgb,var(--topic) 25%,transparent),var(--theme-shadow)}
+:root[data-theme] .growing-node.running .node-run-phase {color:var(--accent)}
+/* Chrome is a reusable material, independent of optional silver atmosphere. */
+:root[data-material=chrome] :is(header,.map-node,.growing-node,.node-finding,.node-direction,.node-source,.node-discovery,.node-inventory,.layout-choice,#workspace-navigation button,.radial-action-menu button.radial-menu-item,.theme-strip) {background-color:var(--surface);background-image:var(--theme-chrome-finish);box-shadow:inset 0 1px 0 #ffffff, inset 0 -1px 0 #657a9630,var(--theme-shadow)}
+:root[data-material=chrome] :is(.map-node,.growing-node):hover {background-image:var(--theme-chrome-finish);border-color:var(--accent);box-shadow:inset 0 1px 0 #ffffff,0 0 0 1px color-mix(in srgb,var(--accent) 28%,transparent),var(--theme-shadow)}
+:root[data-material=chrome] :is(.map-node,.growing-node).selected {background-image:var(--theme-chrome-finish);border-color:var(--topic);box-shadow:inset 0 1px 0 #ffffff,0 0 0 2px var(--topic),var(--theme-shadow)}
+:root[data-material=chrome] .growing-node[data-node-id=core],:root[data-material=chrome] .growing-node[data-node-id=core]:hover {background-image:var(--theme-chrome-finish)}
+:root[data-material=chrome] :is(#node-workbench,.menu-items,.history-panel,.workspace-dialog,#connection-dialog,#rea-dialog) {background-image:linear-gradient(135deg,color-mix(in srgb,var(--surface) 72%,var(--theme-c)),var(--surface) 28%,var(--surface) 82%,color-mix(in srgb,var(--surface) 85%,var(--theme-a)));box-shadow:inset 0 1px 0 #ffffff,var(--theme-shadow)}
+:root[data-theme] .branch-landing-glow {box-shadow:0 0 6px color-mix(in srgb,var(--topic) 15%,transparent)}
+:root[data-theme] .new-result-badge {background:var(--theme-selection);color:var(--ink);border-color:var(--accent)}
+:root[data-theme] #show-new-results {color:var(--accent);border-color:var(--line)}
+:root[data-motion=still] .node-activity-ring {animation:none;--rea-activity-angle:35deg}
+:root[data-motion=still] :is(.radial-menu-item,.radial-menu-wires path,.radial-closing button) {animation:none!important;stroke-dashoffset:0}
+/* The compact switcher floats over the canvas without changing its bounds. */
+.theme-strip {position:fixed;z-index:35;bottom:14px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:9px;max-width:calc(100vw - 24px);padding:6px 8px 6px 12px;border:1px solid var(--line);border-radius:30px;background:var(--surface);box-shadow:var(--theme-shadow)}
+.theme-strip[hidden] {display:none}
+.theme-strip-items {display:flex;gap:5px;max-width:55vw;overflow-x:auto;scrollbar-width:none;padding:3px}
+.theme-orb {display:block;flex:none;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--theme-a),var(--canvas) 45%,var(--theme-b));box-shadow:inset 0 0 0 1px #ffffff20,inset 0 1px 2px #ffffff18}
+.theme-strip .theme-swatch {display:grid;place-items:center;padding:4px;min-height:32px;min-width:32px;border:1px solid transparent;border-radius:50%;background:transparent;flex:none}
+.theme-swatch[aria-pressed=true] {outline:1.5px solid var(--accent);outline-offset:1px;background:var(--theme-selection)}
+.theme-current-name {font-size:11px;color:var(--muted);white-space:nowrap}
+.theme-strip :is(#theme-manage,#theme-strip-hide) {min-height:30px;padding:4px 8px;border:0;border-radius:20px;font-size:11px}
+.theme-strip #theme-strip-hide {font-size:18px;width:29px}
+#appearance-open {min-width:34px;min-height:34px;padding:6px;display:grid;place-items:center}
+#appearance-open .theme-orb {width:20px;height:20px}
+.theme-manager {width:min(590px,calc(100vw - 24px))}
+.theme-dialog-heading {display:flex;justify-content:space-between;align-items:center;gap:16px}
+.theme-dialog-heading h2 {margin:0}
+.theme-dialog-heading button {border:0}
+.theme-library {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px 10px;margin:26px 2px}
+.theme-library .theme-swatch {display:flex;align-items:center;justify-content:center;flex-direction:column;gap:9px;white-space:normal;min-height:96px;padding:10px 4px;border-radius:12px;font-size:12px;text-align:center}
+.theme-library .theme-orb {width:40px;height:40px}
+.theme-strip-option {display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.theme-strip-option input {width:16px;height:16px}
+.theme-dialog-actions {display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.theme-dialog-actions button {font-size:12px;min-height:36px}
+.theme-apple-treatment {margin-top:18px;display:flex;align-items:center;gap:15px;font-size:13px}
+.theme-apple-treatment[hidden] {display:none}
+.theme-editor {width:min(730px,calc(100vw - 24px));max-height:90dvh}
+.theme-editor-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 22px;margin-block:14px}
+.theme-field {display:flex;flex-direction:column;gap:8px;min-width:0;font-size:12px;color:var(--muted)}
+.theme-field :is(input,select) {min-height:36px;max-width:100%;width:100%;padding:7px;border:1px solid var(--line);border-radius:8px;font-size:13px}
+.theme-color-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.theme-color-grid input[type=color] {padding:3px;width:100%;height:35px}
+.theme-wire-colors {display:flex;gap:9px;margin-top:14px;flex-wrap:wrap}
+.theme-wire-colors input {width:46px;height:36px;padding:3px;border:1px solid var(--line);border-radius:8px}
+.theme-inline-actions {display:flex;gap:8px;margin-block:10px}
+.theme-inline-actions button {font-size:11px;min-height:30px}
+.theme-editor-note {font-size:12px}
+.theme-field input[type=range] {padding:0}
+:root[data-theme] :is(.node-card,.discovery-block,.accordion-history,.accordion-node,.accordion-morph-ghost,.feature-cluster,.feature-tile) {background:var(--surface);color:var(--ink);border-color:var(--line);box-shadow:var(--theme-shadow)}
+:root[data-theme] :is(.node-title,.node-summary,.node-origin,.node-type,.node-grip,.node-details,.detail-title-action,.discovery-feature-title,.discovery-block-heading h1,.discovery-block-heading p,.discovery-options td,.accordion-node-details p,.accordion-node-details h3,.accordion-node-details small,.accordion-node-details summary) {color:var(--muted)}
+@media(max-width:650px) {.theme-current-name {display:none}.theme-strip {gap:4px;padding-inline:6px}.theme-strip-items {max-width:calc(100vw - 110px);gap:3px}.theme-strip .theme-orb {width:20px;height:20px}.theme-strip .theme-swatch {min-width:29px;min-height:29px;padding:3px}.theme-library {gap:10px 8px}.theme-library .theme-swatch {font-size:11px}.theme-editor-grid {gap:12px}.theme-manager,.theme-editor {padding:20px}}
+@media(max-width:850px) {header nav {min-width:0}header .graph-search-wrap {min-width:0;flex-shrink:1}}
+@media(prefers-reduced-motion:reduce) {:root[data-theme] :is(button,.radial-menu-item,.radial-menu-wires path,.node-activity-ring) {transition:none;animation:none!important}}
+@media(prefers-reduced-transparency:reduce) {:root[data-theme] body:not(.legacy-view) :is(#workspace-heading,#workspace-notice,#workspace-map-tools,#activity) {background:var(--canvas);backdrop-filter:none}}
+
+#main::after {content:"";position:absolute;inset:0;pointer-events:none;z-index:-1;opacity:.035;background:var(--theme-texture,none)}
+:root[data-texture=grain] {--theme-texture:repeating-conic-gradient(var(--ink) 0% 25%,transparent 0% 50%) 0 0 / 3px 3px}
+:root[data-texture=grid] {--theme-texture:linear-gradient(var(--ink) 1px,transparent 1px) 0 0 / 32px 32px,linear-gradient(90deg,var(--ink) 1px,transparent 1px) 0 0 / 32px 32px}
+
+:root[data-theme] #map-wires>.comparison-wire {stroke-dasharray:calc(5 / var(--map-camera-scale,1)) calc(5 / var(--map-camera-scale,1))}

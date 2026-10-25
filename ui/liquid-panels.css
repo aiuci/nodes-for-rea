@@ -1,0 +1,73 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+/* Placement and reflow only: all controls retain the existing theme and previews. */
+#canvas-control-dock{position:relative;display:grid;align-self:center;align-items:center;box-sizing:border-box;max-width:100%;max-height:40vh;overflow:auto;border:1px solid var(--line);border-radius:16px;padding:8px 12px;gap:6px;margin:6px 0;cursor:grab;touch-action:none}
+#canvas-control-dock>.magnetic-module{width:100%;min-width:0}
+.magnetic-module{position:relative;box-sizing:border-box;padding:7px;min-width:0}
+.liquid-grip{display:inline-grid;place-items:center;min-width:14px!important;width:14px;min-height:25px!important;height:25px;padding:0!important;border:0;background:transparent;color:var(--muted);border-radius:5px;cursor:grab!important;touch-action:none!important}
+.liquid-grip::before{content:'';width:4px;height:13px;border-inline:1px solid currentColor}
+.liquid-grip:focus-visible{outline:1px solid var(--accent)}
+.magnetic-module>.liquid-grip{display:inline-grid;flex:none;align-self:center;opacity:.65}
+.magnetic-module>.liquid-grip:is(:hover,:focus-visible){opacity:1}
+.magnetic-module[data-placement=dock]{padding:4px;background:transparent;border-radius:0;border-left:1px solid var(--line)}
+.magnetic-module[data-placement=dock]:first-of-type{border-left:0}
+.liquid-group-grip{display:block;margin:0 auto 3px;width:30px}
+.liquid-group-grip::before{display:block;width:16px;height:4px;border-inline:0;border-block:1px solid currentColor;margin:auto}
+.magnetic-group{padding:8px;box-sizing:border-box}
+.magnetic-group>.magnetic-module,.magnetic-group>.magnetic-split{width:100%;max-width:100%}
+.magnetic-split{width:100%;box-sizing:border-box;align-items:flex-start}
+.magnetic-split.axis-x{display:grid;align-items:center}
+.magnetic-split.axis-x>.magnetic-module,.magnetic-split.axis-x>.magnetic-split{width:100%}
+.magnetic-split.axis-y>.magnetic-module,.magnetic-split.axis-y>.magnetic-split{width:100%}
+.magnetic-split.axis-stack{display:block}
+.liquid-stack-tabs{display:flex;gap:3px;overflow:auto;padding:2px 2px 6px;max-width:100%;scrollbar-width:thin}
+.liquid-stack-tabs button{flex:1 0 auto;min-height:26px;padding:3px 9px;font-size:11px;color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:7px}
+.liquid-stack-tabs button[aria-selected=true]{color:var(--ink);border-color:var(--accent);background:var(--theme-selection)}
+.liquid-stack-page{width:100%;min-width:0}.liquid-stack-page[hidden]{display:none!important}
+.liquid-stack-page>.magnetic-module,.liquid-stack-page>.magnetic-split{width:100%}
+.magnetic-module>#map-layout{grid-template-columns:repeat(auto-fit,minmax(54px,1fr));grid-template-rows:none;overflow:visible;flex:1;min-width:0}
+.magnetic-module>#theme-strip{flex:1;min-width:0;max-width:100%}
+.magnetic-module>#workspace-canvas-controls{display:flex;flex:1;flex-wrap:wrap;justify-content:center;align-items:center;gap:3px;min-width:0;padding:2px;border:0;background:transparent}
+#workspace-canvas-controls>div{display:flex;flex-wrap:wrap;gap:3px}
+#workspace-canvas-controls button{min-height:30px;min-width:30px;width:auto;padding:4px 6px;font-size:11px}
+#workspace-navigation-more svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round}
+.liquid-resize{position:absolute;z-index:4;display:block;touch-action:none}
+.liquid-resize.east,.liquid-resize.west{top:8px;bottom:8px;width:6px;cursor:ew-resize}
+.liquid-resize.east{right:0}.liquid-resize.west{left:0}
+.liquid-resize.north,.liquid-resize.south{left:8px;right:8px;height:6px;cursor:ns-resize}
+.liquid-resize.north{top:0}.liquid-resize.south{bottom:0}
+.liquid-resize.corner{width:13px;height:13px;bottom:0;right:0;cursor:nwse-resize;border-right:2px solid var(--line);border-bottom:2px solid var(--line);border-radius:0 0 10px 0}
+.liquid-resize:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+#magnetic-drop-targets{position:fixed;z-index:130;width:96px;height:96px;display:grid;grid-template:repeat(3,32px)/repeat(3,32px);pointer-events:none}
+#magnetic-drop-targets[hidden]{display:none}
+#magnetic-drop-targets span{display:grid;place-items:center;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);font-size:11px;box-shadow:var(--theme-shadow)}
+#magnetic-drop-targets [data-side=top]{grid-area:1/2}#magnetic-drop-targets [data-side=bottom]{grid-area:3/2}
+#magnetic-drop-targets [data-side=left]{grid-area:2/1}#magnetic-drop-targets [data-side=right]{grid-area:2/3}
+#magnetic-drop-targets [data-side=stack]{grid-area:2/2}
+#magnetic-drop-targets [data-active=true]{border-color:var(--accent);background:var(--theme-selection);outline:1px solid var(--accent)}
+.magnetic-module>#canvas-navigation{flex:1;min-width:0}
+.magnetic-module[data-placement=floating]{background:transparent}
+
+.magnetic-module #map-layout .layout-choice{min-width:52px}
+
+header #workspace-canvas-controls{flex:0 1 auto;display:flex;flex-wrap:wrap;align-items:center;gap:3px;padding:0 8px 0 0;margin:0;border:0;background:transparent;max-width:100%}
+header #workspace-canvas-controls .wire-style-control{display:flex;gap:3px;margin-left:0}
+header #workspace-canvas-controls button{min-height:30px;padding:4px 6px;font-size:11px}
+body.legacy-view #workspace-canvas-controls{display:none}
+
+#preset-focus{display:grid;flex:0 0 76px;gap:2px;align-content:center;margin-right:4px}
+#preset-focus>button{min-width:0;min-height:24px;padding:3px 4px;font-size:10px;white-space:normal;line-height:1.3;border:1px solid transparent;background:transparent;color:var(--muted)}
+#preset-focus>button[aria-pressed=true]{border-color:var(--accent);background:var(--theme-selection);color:var(--ink)}
+#preset-focus>button:focus-visible{outline:1px solid var(--accent)}
+
+/* Direct tools and a comfortable lower stop; preserve the existing dock skin. */
+#canvas-control-dock{min-height:min(104px,40vh);padding-block:18px}
+#canvas-control-dock>.magnetic-module[data-module=navigation]{align-self:center}
+#canvas-control-dock .magnetic-module>#canvas-navigation,.magnetic-group #canvas-navigation{gap:3px}
+#canvas-navigation button.direct-tool{display:inline-grid;place-items:center;width:30px;min-width:30px;height:32px;min-height:32px;padding:5px;font-size:0}
+#canvas-navigation button.direct-tool::before{display:none!important}
+#canvas-navigation button.direct-tool svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+#canvas-navigation button[aria-pressed=true]{background:var(--theme-selection);border-color:var(--accent);color:var(--ink)}
+#workspace-undo-arrange{display:none!important}
+.node-label-tooltip[data-passive=true]{pointer-events:none}

@@ -1,0 +1,32 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+#connection-dialog{width:min(620px,calc(100vw - 32px));max-height:90dvh;overflow:auto;padding:24px;border:1px solid #7d91a9;border-radius:9px;background:#1d252f;color:#edf4fc}#connection-dialog::backdrop{background:#080c12b8}#connection-dialog h2{font-size:23px;margin:0}#connection-dialog p{font-size:14px;line-height:1.55;color:#d0ddeb}.connection-heading{display:flex;justify-content:space-between;align-items:center;gap:12px}.connection-heading button{border-color:#7d91a9;color:#edf4fc}#connection-dialog label{display:block;font-size:14px;font-weight:500;margin:14px 0 5px}#connection-dialog input,#connection-dialog select{display:block;width:100%;padding:9px 11px;font:inherit;font-size:14px;color:#edf4fc;background:#101821;border:1px solid #62758b;border-radius:4px}#connection-dialog input:focus-visible,#connection-dialog select:focus-visible{outline:2px solid #65ecd0;outline-offset:2px}.connection-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.connection-buttons button,#connection-browse{border-color:#61758d;color:#edf4fc}#connection-test{background:#65ecd0;color:#102c25;border-color:#65ecd0}#connection-status{padding:12px 0;white-space:pre-wrap;overflow-wrap:anywhere}#connection-dialog details{margin-top:12px}#connection-dialog summary{cursor:pointer;color:#c8dbea;font-size:13px}#connection-dialog pre{font-size:12px;line-height:1.5;white-space:pre-wrap;background:#101821;padding:10px;border-radius:4px}#connection-dialog .connection-note{font-size:12px;color:#b9cbde}#connection-open{white-space:nowrap}@media(max-width:650px){#connection-dialog{padding:16px}#connection-dialog h2{font-size:20px}header .local{display:none}}
+
+/* Setup uses the same material and ink tokens as every workspace appearance. */
+:root[data-theme] #connection-dialog{width:min(760px,calc(100vw - 32px));padding:28px;background:var(--surface);color:var(--ink);border-color:var(--line);border-radius:var(--theme-radius,12px);box-shadow:var(--theme-shadow)}
+#connection-dialog .connection-heading{position:sticky;top:-28px;z-index:2;padding:12px 0;background:var(--surface,#1d252f)}
+#connection-dialog .setup-intro{max-width:60ch}
+#connection-dialog h3{font-size:16px;margin:0;font-weight:600}
+#connection-dialog h4{font-size:14px;font-weight:600;margin:18px 0 8px}
+#setup-rea-section{border-top:1px solid var(--line,#62758b);margin-top:24px;padding-top:4px}
+#setup-engine-installation{border-left:2px solid var(--accent,#65ecd0);padding-left:12px}
+#setup-engine-installation p{margin:5px 0}
+.setup-section-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:24px 0 8px}
+.connection-heading h2{flex:1}
+#connection-dialog .setup-section-heading button{font-size:12px;white-space:nowrap}
+.setup-agent,.setup-tool{border:1px solid var(--line,#62758b);border-radius:10px;padding:14px;margin:8px 0;background:var(--canvas,#101821)}
+.setup-agent[data-selected=true]{border-color:var(--accent,#65ecd0);box-shadow:inset 3px 0 var(--accent,#65ecd0)}
+.setup-agent-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:14px}
+.setup-badge{font-size:11px;white-space:nowrap;border:1px solid var(--line,#62758b);padding:3px 8px;border-radius:99px;color:var(--muted,#c8dbea)}
+.setup-tool[data-state=ready] .setup-badge{color:var(--theme-success,#92d4b9)}
+.setup-tool[data-state=missing] .setup-badge,.setup-tool[data-state=unavailable] .setup-badge{color:var(--theme-warning,#e6bb7a)}
+#connection-dialog .setup-location{font-size:11px;overflow-wrap:anywhere;color:var(--muted,#b9cbde);margin:4px 0}
+#connection-dialog .setup-agent p,#connection-dialog .setup-tool p{margin:6px 0}
+#connection-dialog .setup-agent .connection-buttons{margin-top:10px}
+#connection-dialog #connection-status:empty{display:none}
+#connection-dialog #connection-status{border-left:3px solid var(--accent,#65ecd0);padding:10px 12px;background:var(--canvas,#101821);color:var(--ink,#edf4fc);font-size:13px;line-height:1.5}
+#connection-dialog #connection-advanced{margin-top:24px;border-top:1px solid var(--line,#62758b);padding-top:16px}
+@media(max-width:650px){:root[data-theme] #connection-dialog{padding:16px}.setup-agent-heading{align-items:flex-start;flex-wrap:wrap}#connection-dialog .connection-heading{top:-16px}.setup-section-heading{align-items:flex-start}}
+
+#first-run-connect{display:flex;align-items:center;gap:12px;padding:12px 20px;background:var(--surface);color:var(--text);border-bottom:1px solid var(--line);flex-wrap:wrap}#first-run-connect[hidden]{display:none}#first-run-connect>div{flex:1;min-width:180px}#first-run-connect p{margin:4px 0 0;font-size:12px;color:var(--muted)}

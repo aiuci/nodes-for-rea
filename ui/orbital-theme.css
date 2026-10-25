@@ -1,0 +1,35 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+/* Optional skin: geometry, routing, text and physical targets stay unchanged.
+   Idle nodes remain still. Only the existing real-work ring keeps moving;
+   result travel/landing reuse their existing seven-element finite budget. */
+:root[data-theme-effects=orbital] .growing-node:not([data-node-id=core]) {
+  background:linear-gradient(155deg,color-mix(in srgb,var(--topic) 7%,var(--surface)),var(--surface) 70%);
+  border-color:color-mix(in srgb,var(--topic) 60%,var(--line));
+}
+:root[data-theme-effects=orbital] .growing-node.selected:not([data-node-id=core]) {
+  background:var(--theme-selection);
+  border-color:var(--topic);
+  box-shadow:0 0 0 1px var(--topic),0 0 15px color-mix(in srgb,var(--topic) 16%,transparent);
+}
+:root[data-theme-effects=orbital] .growing-node.running {
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--topic) 65%,transparent),0 0 18px color-mix(in srgb,var(--topic) 22%,transparent);
+}
+:root[data-theme-effects=orbital] .node-activity-ring {
+  animation-duration:var(--theme-activity-time);
+  background:conic-gradient(from var(--rea-activity-angle),transparent 0deg 205deg,
+    color-mix(in srgb,var(--topic) 35%,transparent) 240deg,var(--topic) 292deg,#eff6ff 323deg,transparent 342deg 360deg);
+}
+:root[data-theme-effects=orbital] .branch-travel-light {
+  background:#eff6ff;
+  box-shadow:0 0 5px var(--topic),0 0 10px color-mix(in srgb,var(--topic) 50%,transparent);
+}
+:root[data-theme-effects=orbital] .branch-landing-glow {
+  box-shadow:0 0 12px color-mix(in srgb,var(--topic) 50%,transparent);
+}
+:root[data-theme-effects=orbital][data-orbital-paused=true] .node-activity-ring {animation-play-state:paused}
+:root[data-theme-effects=orbital][data-motion=still] .node-activity-ring {animation:none}
+@media(prefers-reduced-motion:reduce){
+  :root[data-theme-effects=orbital] .node-activity-ring {animation:none;--rea-activity-angle:35deg}
+}

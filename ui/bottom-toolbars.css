@@ -1,0 +1,17 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+/* Navigation left, appearance right. No graph or theme redesign. */
+#canvas-navigation{left:12px;right:auto;bottom:12px;transform:none;max-width:calc(100% - 80px);z-index:45}
+#canvas-navigation-options{left:12px;right:auto;bottom:calc(var(--nodes-navigation-height,44px) + 24px);max-height:calc(100% - var(--nodes-navigation-height,44px) - 40px);z-index:46}
+#canvas-minimap{bottom:calc(var(--nodes-navigation-height,44px) + 24px)}
+#theme-palette-toggle{position:absolute;right:12px;bottom:12px;z-index:47;display:grid;place-items:center;width:40px;height:40px;min-height:40px;padding:9px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);box-shadow:var(--theme-shadow)}
+#theme-palette-toggle svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+#theme-palette-toggle[aria-expanded=true]{border-color:var(--accent)}
+#theme-strip{position:absolute;left:auto;right:12px;bottom:calc(var(--nodes-navigation-height,44px) + 24px);transform:none;width:max-content;max-width:calc(100% - 24px);max-height:calc(100% - var(--nodes-navigation-height,44px) - 40px);overflow:auto;display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px 10px;padding:9px 12px;border-radius:16px;z-index:47}
+#theme-strip .theme-strip-items{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:5px;max-width:none;min-width:0;overflow:visible;padding:2px}
+#theme-strip .theme-current-name{display:block;min-width:0;max-width:30ch;white-space:normal;overflow-wrap:anywhere;font-size:.75rem}
+#theme-strip :is(#theme-manage,#theme-strip-hide){font-size:.75rem}
+#theme-strip #theme-strip-hide{font-size:1.125rem}
+#theme-strip .theme-swatch{min-width:32px;min-height:32px}
+#theme-strip .theme-orb{width:24px;height:24px}

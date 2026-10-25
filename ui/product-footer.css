@@ -1,0 +1,12 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+#product-footer{flex:0 0 36px;min-height:36px;display:flex;align-items:center;justify-content:flex-end;gap:4px;padding:0 12px;position:relative;z-index:50;background:var(--canvas);color:var(--ink)}
+:root[data-theme] #product-footer>button{display:inline-flex;align-items:center;justify-content:center;width:32px;min-width:32px;height:32px;min-height:32px;padding:6px;border:1px solid transparent;border-radius:8px;background:transparent;color:var(--ink)}
+#product-footer>button svg{width:19px;height:19px;pointer-events:none}
+:root[data-theme] #product-footer>button:hover,:root[data-theme] #product-footer>button[aria-expanded=true]{background:var(--surface);border-color:var(--line)}
+#product-footer button:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+#footer-sites-menu{position:absolute;right:12px;bottom:calc(100% + 6px);width:210px;max-width:calc(100vw - 24px);max-height:calc(100dvh - 72px);overflow:auto;padding:6px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);box-shadow:var(--theme-shadow)}
+:root[data-theme] #footer-sites-menu>button{display:block;width:100%;min-height:40px;padding:9px 12px;border:0;border-radius:7px;text-align:left;color:var(--ink);background:transparent;font-size:14px}
+:root[data-theme] #footer-sites-menu>button:hover,:root[data-theme] #footer-sites-menu>button:focus-visible{background:var(--theme-selection)}
+#footer-link-status{position:absolute;bottom:calc(100% + 6px);right:12px;width:260px;max-width:calc(100vw - 24px);margin:0;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink);font-size:12px;box-shadow:var(--theme-shadow)}

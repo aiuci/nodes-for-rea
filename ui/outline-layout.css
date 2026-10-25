@@ -1,0 +1,78 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+#workspace-surface.has-outline{grid-template-columns:var(--outline-width,245px) minmax(0,1fr)}
+#workspace-outline{min-width:0;margin-right:8px;padding-right:6px;overflow-x:hidden}
+#workspace-outline .outline-row{align-items:flex-start;min-width:0}
+#workspace-outline .outline-node{flex:1;min-width:0;max-width:100%;white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;word-break:normal;line-height:1.5;font-size:13px;padding-block:7px}
+#workspace-outline .outline-fold{flex-shrink:0;margin-top:4px}
+#workspace-outline .outline-row>small{flex-shrink:0;margin-top:9px}
+#outline-resize{position:absolute;top:0;bottom:0;width:12px;z-index:8;cursor:col-resize;touch-action:none}
+#outline-resize[hidden],body.legacy-view #outline-resize{display:none}
+#outline-resize:after{content:'';position:absolute;top:8px;bottom:8px;left:4px;width:3px;border-radius:3px;background:#40546a}
+#outline-resize:hover:after,#outline-resize:focus-visible:after,.outline-resizing #outline-resize:after{background:#bfd0e5}
+#outline-resize:focus-visible{outline:2px solid #c3b6ff;outline-offset:-2px}
+.outline-resizing{cursor:col-resize;user-select:none}
+
+/* Keep the user's scroll position while wrapped titles reflow on resize. */
+#workspace-outline{overflow-anchor:none}
+
+/* Deep indentation yields before it can squeeze the title to single letters. */
+#workspace-outline .outline-row{padding-left:min(calc(10px + var(--outline-depth,0)*14px),max(10px,calc(100% - 160px)))}
+
+/* One persistent sidebar control at the left edge, above the sidebar itself. */
+#workspace-map-tools #workspace-list-toggle{display:inline-flex;align-items:center;justify-content:center;flex:none;width:32px;min-height:32px;padding:5px;margin:8px 0 0 8px;color:#b7c7db}
+#workspace-list-toggle svg{display:block;fill:none;stroke:currentColor;stroke-width:1.5}
+#workspace-list-toggle .sidebar-pane{fill:currentColor;stroke:none;opacity:.25}
+#workspace-list-toggle[aria-expanded=true] .sidebar-pane{opacity:.7}
+#workspace-map-tools #workspace-list-toggle[aria-expanded=true]{background:#1b2a37;border-color:#53657a;color:#edf2f8}
+@media(max-width:600px){#workspace-navigation>div{flex-wrap:wrap;min-width:0;max-width:100%}#workspace-map-tools #workspace-list-toggle{margin-right:2px}}
+
+#workspace-map-tools{display:flex;align-items:flex-start;gap:10px;flex:none;min-height:44px;min-width:0}
+#workspace-map-tools #workspace-navigation{flex:1;min-width:0}
+body.legacy-view #workspace-map-tools{display:none}
+@media(max-width:600px){#workspace-map-tools{gap:6px}#workspace-map-tools #workspace-list-toggle{margin-left:0;margin-top:0}}
+
+/* Follow lives with the sidebar, not in the map toolbar. */
+#workspace-outline{padding-top:0}
+#workspace-outline .outline-heading{position:sticky;top:0;z-index:2;flex-wrap:wrap;gap:6px;background:var(--canvas);padding-top:8px;padding-bottom:8px;min-height:36px}
+#outline-follow{margin-left:auto;min-height:28px;padding:3px 6px;font-size:11px;border:1px solid #35475a;border-radius:6px;color:#acb9cc}
+#outline-follow[aria-pressed=true]{background:#233244;border-color:#899db7;color:#edf2f8}
+#workspace-outline .outline-new{color:#c7d8eb;font-size:9px}
+
+#workspace-outline .outline-row:has(.node-select-checkbox){position:relative;padding-left:min(calc(34px + var(--outline-depth,0)*12px),max(34px,calc(100% - 150px)))}
+.outline-row .node-select-checkbox{position:absolute;left:8px;top:10px;appearance:auto;flex:none;width:16px;height:16px;margin:0;accent-color:#b8a8ec;cursor:pointer}
+.outline-row .node-select-checkbox:focus-visible{outline:2px solid #e4dbff;outline-offset:3px}
+#bulk-node-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px}
+#bulk-node-actions[hidden]{display:none}
+.bulk-delete-dialog{max-width:min(540px,calc(100vw - 40px))}
+.bulk-delete-dialog ul{max-height:240px;overflow:auto}
+.bulk-delete-dialog button{margin:8px 8px 0 0}
+
+#bulk-node-actions{padding-top:8px;max-width:360px}
+@media(max-width:600px){#workspace-map-tools:has(#bulk-node-actions:not([hidden])){flex-wrap:wrap}#bulk-node-actions{flex-basis:100%;padding:0 8px 8px}}
+
+#outline-select-nodes{display:block;margin:0 8px 12px;padding:3px 2px;min-height:28px;font-size:11px;color:#93a5ba;background:transparent;border:0;text-align:left}
+#outline-select-nodes:hover,#outline-select-nodes[aria-pressed=true]{color:#e4dbff}
+#outline-select-nodes:focus-visible{outline:2px solid #c3b6ff;outline-offset:2px}
+
+/* Connected hierarchy is a navigation aid in every appearance. Keep it separate
+   from map wire visibility and from row label/button hit targets. */
+#workspace-outline .outline-tree{position:relative;isolation:isolate}
+#workspace-outline .outline-hierarchy{position:absolute;left:0;top:0;z-index:1;pointer-events:none;overflow:hidden}
+#workspace-outline .outline-hierarchy path:not(.outline-marker){fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+#workspace-outline .outline-row{position:relative}
+#workspace-outline .outline-row>.outline-branch-slot{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;flex:0 0 16px;height:33px}
+#workspace-outline .outline-branch-slot .outline-fold{width:16px;min-width:16px;padding:0;margin:0;background:transparent;line-height:1;min-height:24px}
+#workspace-outline .outline-row>.outline-node{border-left:0;padding-left:3px}
+#workspace-outline .outline-row>:is(.outline-node,.outline-actions,.node-select-checkbox,small){position:relative;z-index:2}
+#workspace-outline .outline-row>.node-select-checkbox{position:absolute}
+
+/* Compress the lane spacing as a whole, rather than merging deep levels into
+   one rail. Even a narrow sidebar retains a distinct lane for each ancestor. */
+#workspace-outline .outline-tree .outline-row{padding-left:calc(10px + var(--outline-depth,0)*var(--outline-step,14px))}
+#workspace-outline .outline-tree .outline-row:has(.node-select-checkbox){padding-left:calc(34px + var(--outline-depth,0)*var(--outline-step,14px))}
+
+/* Navigation accents support tracking without repainting map identities. */
+#workspace-outline .outline-hierarchy .outline-marker{stroke:none}
+#workspace-outline .outline-tree:not([data-outline-treatment=original]) .outline-row.selected{box-shadow:inset 3px 0 var(--outline-topic)}

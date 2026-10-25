@@ -1,0 +1,29 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+#node-update{margin:4px 0 16px;padding:12px;border:1px solid #ab9162;border-radius:9px;background:#2a251c}
+#node-update p{margin:0 0 10px;line-height:1.5;font-size:13px;color:#f4dfb5}
+#node-update button{background:#f1e6cd;color:#1c211e;font-weight:600;white-space:normal}
+#discovery-feedback{position:sticky;top:var(--panel-heading-height,54px);z-index:3;border:1px solid #637b98;background:#1a2c3b;border-radius:9px;padding:11px;margin:4px 0 14px}
+.discovery-feedback-row{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+#discovery-status{font-size:14px;flex:1;min-width:110px}
+#discovery-elapsed{font-size:12px;color:#b9cde4}
+#discovery-stop{min-height:29px;padding:3px 9px;font-size:12px}
+#discovery-phase{font-size:13px;line-height:1.5;margin:8px 0 0;color:#c8d8e9;overflow-wrap:anywhere}
+.work-spinner{width:17px;height:17px;border:2px solid #6784a3;border-top-color:#f1f5fb;border-radius:50%;animation:discovery-spin .8s linear infinite;flex-shrink:0}
+#discovery-feedback[data-state=finished]{border-color:#667c72;background:#1a2926}
+#discovery-feedback[data-state=finished][data-outcome=boundary]{border-color:#9c845b;background:#29251e}
+@keyframes discovery-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.work-spinner{animation:none;border-top-color:#f1f5fb}}
+
+/* Restore the approved Dev activity perimeters. The outer overlay lives outside
+   the scrolling panel; neither decorative layer can cover physical controls. */
+#discovery-feedback .work-spinner{display:none}
+#node-panel-frame.discovery-working{--topic:var(--accent,#b9cde4)}
+#node-panel-frame>.discovery-activity-ring{z-index:20;animation-duration:2.8s}
+#node-panel-frame>.discovery-activity-ring[hidden]{display:none}
+#discovery-feedback>.discovery-status-ring{--topic:var(--accent,#b9cde4);inset:-3px;padding:2px;opacity:.7;animation-duration:4.6s;animation-delay:-1.15s}
+#discovery-feedback>.discovery-status-ring[hidden]{display:none}
+@media(prefers-reduced-motion:reduce){#discovery-feedback>.discovery-status-ring{animation:none;--rea-activity-angle:35deg}}
+
+.agent-setup-prompt{margin:4px 0 12px;color:var(--ink);line-height:1.5;font-size:14px;overflow-wrap:anywhere}

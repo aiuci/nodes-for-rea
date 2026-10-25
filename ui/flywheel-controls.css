@@ -1,0 +1,22 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (C) 2026 Jeremy Opio
+ */
+/* Shared menu typography and alignment live in radial-menu.css. */
+.node-bookmark{flex-shrink:0;min-width:30px;min-height:30px;padding:2px;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.node-bookmark[aria-pressed=true]{color:var(--ink);border-color:var(--topic)}
+.node-bookmark:focus-visible{outline:2px solid var(--topic);outline-offset:3px}
+.node-bookmark:disabled{opacity:.55}
+#workspace-outline .node-bookmark{min-width:26px;min-height:28px;font-size:14px;opacity:0}
+#workspace-outline .outline-row:is(:hover,:focus-within,.selected) .node-bookmark{opacity:1}
+.reading-destinations{display:flex;flex-wrap:wrap;gap:8px;border-bottom:1px solid var(--line);padding:0 0 14px;margin:14px 0 18px}
+.reading-destinations button{font-size:12px;padding:7px 10px;min-height:34px;color:var(--muted);border:1px solid transparent;border-radius:7px;background:transparent}
+.reading-destinations button[aria-pressed=true]{color:var(--ink);background:var(--theme-selection);border-color:var(--line)}
+.reading-history-record,.comparison-origins{border-bottom:1px solid var(--line);padding:8px 0 14px}
+.flywheel-dialog{width:min(580px,calc(100vw - 30px));max-height:calc(100dvh - 30px);overflow:auto;color:var(--ink);background:var(--surface)}
+.flywheel-dialog label{display:block;margin:15px 0;font-size:13px}
+.flywheel-dialog :is(select,textarea){display:block;width:100%;max-width:100%;margin-top:6px;padding:8px;color:var(--ink);background:var(--canvas);border:1px solid var(--line);border-radius:7px}
+.flywheel-dialog>button{margin:8px 8px 0 0}
+.flywheel-dialog :is(p,small){overflow-wrap:anywhere}
+#file-menu{position:relative}
+#file-menu-items{position:absolute;right:0;min-width:230px;max-height:calc(100dvh - 80px);overflow:auto;z-index:130;background:var(--surface);color:var(--ink);border:1px solid var(--line);padding:9px;border-radius:10px}
+#file-menu-items button{display:block;width:100%;text-align:left}
