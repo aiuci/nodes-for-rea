@@ -15,3 +15,9 @@ documentation assets; adding them does not update the application release.
 
 Creator: Jeremy Opio / Gorgeous Systems. See the repository's LICENSE, NOTICE.md
 and TRADEMARKS.md; existing branding reservations remain in place.
+
+`gorgeous-systems-showcase.png` is the unmodified website showcase capture supplied
+by the project owner on October 26, 2026. It shows the orbital graphics and
+product presentation at https://gorgeous.systems/#products. This is website
+presentation artwork; the separate workspace images above are application
+screenshots. The README links to the live site for the complete showcase.

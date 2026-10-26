@@ -5,6 +5,12 @@ its evidence, and keep connected findings in a saved investigation.
 
 [Install](#install-and-open) · [Release notes](https://github.com/aiuci/nodes-for-rea/releases) · [Project website](https://gorgeous.systems/nodes-for-rea/) · [Contribute](CONTRIBUTING.md)
 
+[![Nodes for REA showcase from Gorgeous Systems: orbital artwork, the visual investigation workspace, and Explore, Investigate, Understand panels.](docs/images/gorgeous-systems-showcase.png)](https://gorgeous.systems/#products)
+
+*Explore. Investigate. Understand. [See the full showcase at Gorgeous Systems](https://gorgeous.systems/#products).*
+
+## Inside the application
+
 <a href="docs/images/nodes-workspace-light.png">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/nodes-workspace-dark.png">
