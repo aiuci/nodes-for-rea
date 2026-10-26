@@ -48,3 +48,13 @@ logo area was uniformly scaled to 76%, isolated from its light background and
 composited onto v3 without generative redrawing. The patch occupies x=94..450,
 y=122..212 in the 1415x1111 image. A raw RGB comparison found zero changed pixels
 outside that rectangle. The remaining composition is unchanged from v3.
+
+`gorgeous-systems-showcase-v5.png` replaces stretched decorative artwork in the
+row above the footer with original crops from the same owner-supplied source.
+The left artwork strip is scaled by height with its aspect ratio preserved.
+The right feature panel, including its original node symbols, is scaled by
+width with its aspect ratio preserved and centered within the existing panel.
+No generative redrawing was used for this correction. A raw RGB comparison
+found zero changed pixels outside the left artwork strip (x=67..241,
+y=625..890) and right panel (x=928..1349, y=625..890). The restored original logo,
+hero, center panel, footer and wave background are unchanged from v4.
