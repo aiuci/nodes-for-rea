@@ -65,7 +65,7 @@ from a checkout of public `main` plus the platform changes on the linked PR bran
   `ev_35f8ed42b2933cd1ba36b6b4d6299e21a8c286cb0ae59ac9b5eabf1343e8466c`
   (JavaScriptApplicationGraph, integrity contradictions: none). Fixture-based
   control checks, not AI model responses.
-- Lifecycle: typed draft, normal window close, fresh reopen — the same
+- Lifecycle: typed draft, normal window close, fresh reopen. The same
   investigation reopens in `ready` status with the draft restored; opening does
   not restart investigation and creates no duplicate. Owned REA worker and app
   processes exited with zero stragglers after normal close on every launch.
