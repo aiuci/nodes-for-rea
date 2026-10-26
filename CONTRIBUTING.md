@@ -11,6 +11,21 @@ for your change, and open a pull request describing the problem, solution and
 verification. See SOURCE.md for setup and test commands. Small, focused changes
 are easiest to review.
 
+## Linux and macOS contributors
+
+Help bring Nodes to Linux and macOS. The current release supports Windows x64;
+Linux and macOS are contribution targets, not supported downloads yet.
+
+Start with [platform support and the first milestone](docs/PLATFORM-SUPPORT.md).
+The platform issues linked below identify source entry points, confirmed
+restrictions and the evidence needed for a useful first contribution. Comment
+with your OS/version, architecture and proposed slice so work can be coordinated.
+
+- [Linux: first working development and investigation milestone](https://github.com/aiuci/nodes-for-rea/issues/1)
+- [macOS: first working development and investigation milestone](https://github.com/aiuci/nodes-for-rea/issues/2)
+
+## Contribution terms
+
 Unless a contribution clearly states a compatible existing third-party license,
 contributions accepted into the original Nodes code are under AGPL-3.0-only,
 the same license as the project. Submit only work you have the right to license

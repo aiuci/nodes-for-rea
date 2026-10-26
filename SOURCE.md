@@ -8,6 +8,12 @@ third-party runtime packages are separate dependencies with their own source
 and licensing, identified in THIRD-PARTY-NOTICES.md and DEPENDENCY-LICENSES.json.
 
 The official source repository is https://github.com/aiuci/nodes-for-rea.
+
+The published release and the setup commands below currently support Windows
+x64. For Linux/macOS contribution work, start with the
+[platform guide](docs/PLATFORM-SUPPORT.md) and its linked issues; the unmodified
+package's platform guards are intentional, and no working port is claimed yet.
+
 For this release, check out tag v0.3.0-preview.20261025.6. Its application runtime
 files match the published npm tarball byte for byte. Repository-only tests,
 documentation and npm scripts do not change that runtime.

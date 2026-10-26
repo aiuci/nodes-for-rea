@@ -109,6 +109,16 @@ desktop execution.
 
 ## Source and contributions
 
+**Linux and macOS help wanted.** The published app is currently Windows x64.
+We welcome contributors who can help establish a working source launch and verify
+the investigation lifecycle on Linux or macOS. See the
+[platform contribution guide](docs/PLATFORM-SUPPORT.md) and
+[contribution starting points](CONTRIBUTING.md#linux-and-macos-contributors).
+
+- [Help with Linux support](https://github.com/aiuci/nodes-for-rea/issues/1)
+- [Help with macOS support](https://github.com/aiuci/nodes-for-rea/issues/2)
+
+
 The complete editable application source is in this repository and in the npm
 package. See [SOURCE.md](SOURCE.md) for cloning, running, testing and repacking;
 see [CONTRIBUTING.md](CONTRIBUTING.md) to propose changes.
