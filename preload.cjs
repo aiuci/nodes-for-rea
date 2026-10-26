@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld('investigation', {
   onDeleteConfirmationDismiss:fn=>{const listener=(_event,token)=>fn(token);ipcRenderer.on('delete-confirmation-dismiss',listener);return ()=>ipcRenderer.removeListener('delete-confirmation-dismiss',listener);},
   setBrandIcon:(png,syncDesktop=false)=>ipcRenderer.invoke('brand-icon',png,syncDesktop),
   centeredWindowCaption:process.platform==='win32',
+  canCreateShortcut:process.platform==='win32',
   windowCaptionDark:process.argv.includes('--nodes-caption-dark'),
   onWindowCaptionTheme:fn=>{const listener=(_event,dark)=>fn(dark);ipcRenderer.on('window-caption-theme',listener);return ()=>ipcRenderer.removeListener('window-caption-theme',listener);},
   goalVoiceStatus:()=>ipcRenderer.invoke('goal-voice-status'),
