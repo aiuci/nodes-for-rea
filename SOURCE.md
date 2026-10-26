@@ -29,6 +29,12 @@ npm test
 npm start -- --data-dir "C:\My modified Nodes workspace"
 ```
 
+The same setup and test commands run a source checkout on macOS arm64
+(verified, see the macOS milestone in
+[docs/PLATFORM-SUPPORT.md](docs/PLATFORM-SUPPORT.md)); Linux x64/arm64
+installation and launch are enabled by the same platform guards, with a Linux
+acceptance record still outstanding.
+
 The public test suite excludes two internal regression suites whose fixtures
 were retained investigation records. Those records are not distributed. The
 remaining tests use synthetic fixtures; one example local path was generalized.

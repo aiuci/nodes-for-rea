@@ -141,6 +141,7 @@ $('connection-claude-login').onclick=$('connection-login').onclick=async()=>{wai
 $('connection-test').onclick=async()=>{waiting(true);status('Checking a small model response…');try{const result=await api.connectionTest(draft());saved=result.settings;fill();drawAgents();status(`${result.message} AI connection saved. Review inspection readiness separately above.`);}catch(error){showError(error);}finally{completedSession=Math.max(completedSession,seenSession);waiting(false);}};
 for(const id of ['codex','claude','claw'])$(`connection-help-${id}`).onclick=()=>api.connectionHelp(id);
 $('connection-shortcut').onclick=async()=>{try{await api.connectionShortcut();status('Desktop shortcut created.');}catch(error){showError(error);}};
+if(!api.canCreateShortcut)$('connection-shortcut').style.display='none';
 api.onConnectionInstruction?.(instruction=>{if(busy&&$('connection-dialog').open){status((instruction.message||'Open the official sign-in page and enter the one-time code.')+(instruction.url?`\n${instruction.url}`:'')+(instruction.code?`\nCode: ${instruction.code}`:''));$('setup-device-page').hidden=instruction.type!=='device-auth';}});
 // Detection is read-only: never select an account, sign in, test a model or
 // change settings merely because the workspace opened.

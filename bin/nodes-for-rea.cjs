@@ -26,7 +26,8 @@ for (let index = 0; index < args.length; index++) {
   } else if (arg === '--') { electronArgs = args.slice(index + 1); break; }
   else if (arg !== '--diagnostics') fail(`Unknown option ${arg}. Run nodes-for-rea --help.`);
 }
-if (process.platform !== 'win32' || process.arch !== 'x64') fail('This preview supports Windows x64 only.');
+const supportedCpus={win32:['x64'],darwin:['x64','arm64'],linux:['x64','arm64']};
+if (!(supportedCpus[process.platform]||[]).includes(process.arch)) fail(`This preview supports Windows x64, macOS x64/arm64 and Linux x64/arm64; ${process.platform}/${process.arch} is not.`);
 const [major, minor] = process.versions.node.split('.').map(Number);
 if (!((major === 22 && minor >= 19) || (major === 24 && minor >= 11) || major >= 26)) fail('Install Node.js 22.19+, 24.11+, or 26+ to run the included REA engine.');
 const paths = distributionPaths(root, {env});
