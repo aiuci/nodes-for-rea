@@ -3,6 +3,33 @@
 A desktop mind map for exploring how software works. Follow a question, inspect
 its evidence, and keep connected findings in a saved investigation.
 
+[Install](#install-and-open) · [Release notes](https://github.com/aiuci/nodes-for-rea/releases) · [Project website](https://gorgeous.systems/nodes-for-rea/) · [Contribute](CONTRIBUTING.md)
+
+<a href="docs/images/nodes-workspace-light.png">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/nodes-workspace-dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="docs/images/nodes-workspace-light.png">
+    <img src="docs/images/nodes-workspace-light.png" alt="Nodes for REA showing a vidIQ investigation: connected questions in the map, a navigable outline on the left, and supporting evidence with unresolved questions marked Unknown on the right." width="1200">
+  </picture>
+</a>
+
+*Actual application screenshots from [Gorgeous Systems](https://gorgeous.systems/nodes-for-rea/), showing the vidIQ investigation. Public descriptions and unverified runtime behavior remain distinct. [Light screenshot](docs/images/nodes-workspace-light.png) · [Dark screenshot](docs/images/nodes-workspace-dark.png).*
+
+## Keep the investigation. See the connections.
+
+- **Find your way through.** Explore a connected mind map or use the outline to
+  return to a question. Choose a layout and theme that suit how you think.
+- **Guide the next step.** Use Agent Control to plan and approve investigation
+  directions with your connected AI agent.
+- **Read what supports a finding.** Open a node's evidence and reasoning while
+  keeping the wider map in view. Unresolved questions can remain Unknown.
+- **Pick up where you left off.** Save a `.reanodes` document and reopen the map,
+  retained findings and partial work.
+
+REA provides software inspection; Nodes keeps the questions and evidence together.
+Explore software you have permission to investigate, and check AI conclusions
+against their supporting sources.
+
 **Windows x64 preview.** Start with a gentle, optional four-step tour. You can
 pause it, resume later, or open it from Settings â†’ Help â†’ Quick tour.
 
