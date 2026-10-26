@@ -34,3 +34,10 @@ three equal Explore / Investigate / Understand panels, consistent gutters and
 complete outer margins. Keep the unmodified workspace captures separately
 available for inspection. Original artwork source:
 https://gorgeous.systems/assets/rea-design-grayscale.webp.
+
+`gorgeous-systems-showcase-v3.png` follows the owner's subsequently supplied
+complete website composition, replacing v2 in the README. Built-in ImageGen
+edits addressed stretched spheres and circular node symbols in the row above
+the footer. It preserves the reference's overall layout but is an AI-assisted
+recreation, not a pixel-identical edit; screenshot detail can differ. The
+separate unmodified application screenshots remain the accurate UI reference.
