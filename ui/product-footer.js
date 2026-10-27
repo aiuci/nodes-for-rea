@@ -8,7 +8,7 @@ const coffee=document.createElement('button');coffee.type='button';coffee.id='fo
 const tree=document.createElement('button');tree.type='button';tree.id='footer-sites';tree.setAttribute('aria-label','Explore our sites');tree.setAttribute('aria-haspopup','menu');tree.setAttribute('aria-expanded','false');tree.innerHTML=icon('m12 3-6 7h4l-6 7h6v4h4v-4h6l-6-7h4Z');
 const menu=document.createElement('div');menu.id='footer-sites-menu';menu.setAttribute('role','menu');menu.setAttribute('aria-label','Our sites');menu.hidden=true;tree.setAttribute('aria-controls',menu.id);
 const status=document.createElement('p');status.id='footer-link-status';status.setAttribute('role','status');status.hidden=true;
-const close=(restore=false)=>{menu.hidden=true;tree.setAttribute('aria-expanded','false');hideNodeTooltip();if(restore)tree.focus({preventScroll:true});};
+const close=(restore=false)=>{if(!menu.hidden)hideNodeTooltip();menu.hidden=true;tree.setAttribute('aria-expanded','false');if(restore)tree.focus({preventScroll:true});};
 const openLink=async key=>{close(key!=='coffee');status.hidden=true;try{await api.openProductLink(key);}catch(error){renderUserError(status,error,{category:'connection',title:'This link could not open',message:'Try again, or open the website in your browser.',action:{label:'Try again',run:()=>openLink(key)}});status.hidden=false;}};
 for(const [key,label]of [['coolnew','CoolNew.tech'],['gorgeous','Gorgeous.systems'],['aiuci','Aiuci.com']]){
  const item=document.createElement('button');item.type='button';item.setAttribute('role','menuitem');item.textContent=label;item.dataset.productLink=key;item.onclick=()=>openLink(key);menu.append(item);

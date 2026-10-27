@@ -36,6 +36,29 @@ header{height:62px;min-height:62px}.brand{font-size:20px;letter-spacing:-.3px}#w
 .node-local-controls .node-grip::after,.node-local-controls .node-grip:hover::after,.node-local-controls .node-grip:focus-visible::after{content:none}
 
 /* Dev 2026-10-19: compact two-line titles, nine accessible type icons. */
+/* Evidence annotations are outside measured title flow and saved geometry. */
+#map-nodes .node-evidence-context{position:absolute;left:0;right:0;top:calc(100% + 1px);height:24px;max-height:24px;padding:0 2px;overflow:hidden;pointer-events:none;user-select:none;color:var(--ink,var(--text));background:var(--canvas);font:500 10px/11.5px 'Segoe UI',system-ui,sans-serif;text-align:left;z-index:1}
+#map-nodes .node-evidence-context[data-placement=above]{top:auto;bottom:calc(100% + 1px)}
+#map-nodes .node-evidence-context[hidden]{display:none}
+#map-nodes .node-evidence-compact{display:block;max-height:23px;overflow:hidden}
+#map-nodes .node-evidence-detail{display:none}
+#workspace-canvas[data-evidence-detail=true] .node-evidence-compact{display:none}
+#workspace-canvas[data-evidence-detail=true] .node-evidence-detail{display:block}
+/* Preserve the old badge's measured space, but give reading zoom to knowledge.
+   Absolute statements cannot resize cards or affect persisted geometry. */
+#map-nodes .node-finding .node-label{position:relative}
+#map-nodes .map-finding-category{visibility:hidden}
+#map-nodes .node-evidence-context{visibility:hidden}
+#map-nodes .node-knowledge-statement{display:none;position:absolute;left:0;right:0;bottom:0;font:400 12px/18px 'Segoe UI',system-ui,sans-serif;color:var(--ink,var(--text));overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;pointer-events:none}
+#workspace-canvas[data-evidence-detail=true] .node-knowledge-statement{display:block}
+#map-nodes :is(.node-evidence-knowledge,.node-evidence-next){display:block;max-width:100%;height:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.outline-node .outline-evidence-context{display:block;max-width:100%;font-size:12px;line-height:1.4;white-space:normal;overflow-wrap:anywhere;color:var(--ink,var(--text));margin-top:3px}
+.outline-evidence-marker{display:inline-block;min-width:1em;margin-right:6px;font-size:12px;font-weight:400;color:inherit;vertical-align:baseline}
+.response-understanding{margin:12px 0;font-size:13px;line-height:1.55}
+.finding-parent-context{margin:12px 0;padding-left:10px;border-left:2px solid var(--line);font-size:13px;line-height:1.55}
+.finding-parent-context p{margin:8px 0}
+.retained-evidence-metadata{margin-top:12px}
+.retained-evidence-metadata pre{max-width:100%;white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px;line-height:1.5}
 #map-nodes>.growing-node{display:grid;grid-template-columns:20px minmax(0,1fr);column-gap:7px;row-gap:4px;align-content:center;align-items:center;padding:8px 11px;min-height:66px}
 #map-nodes .growing-node-open{display:block;min-width:0;width:100%;height:auto;padding:0;margin:0;min-height:0}
 #map-nodes .growing-node-open .node-label{display:block;min-width:0;margin:0;font-size:inherit;overflow:visible;-webkit-line-clamp:unset}

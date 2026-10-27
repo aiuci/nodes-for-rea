@@ -45,8 +45,10 @@ app.whenReady().then(async () => {
   const {deliveryMarkdown,attachDelivery}=await import('./lib/delivery.mjs');
   const {assessFreshness}=await import('./lib/targets.mjs');const {settingsRoot}=await import('./lib/paths.mjs');
   const {browserCapture}=await import('./lib/desktop-browser.mjs');const {publicUrl}=await import('./lib/sources.mjs');const captureBrowser=browserCapture({BrowserWindow},publicUrl);
+  const {AccessSessionManager}=await import('./lib/access-session.mjs');const selectedAccess=new AccessSessionManager({BrowserWindow,urlPolicy:globalThis[Symbol.for('nodes.ownedAccessFixturePolicy')]});
+  app.on('before-quit',()=>selectedAccess.closeAll());
   const nativeCheck=new NativeSetupCheck(settingsRoot);
-  connection=new ConnectionStore(settingsRoot,safeStorage);reaConnection=new ReaConnectionStore(settingsRoot);const getConfig=async()=>{const ai=await connection.config(),engine=await reaConnection.config();const config={...ai,...engine,browser:engine.browser||ai.browser};config.nativeSetupCheck=(target,session)=>nativeCheck.current(target,engine,session);config.nativeSetupPolicy=await readNativePolicy(engine);config.captureBrowser=captureBrowser;const verified=await connection.read();config.recoveryVerification=verified.verification==='model-response'?verified.verifiedAt||'':'';return config;};
+  connection=new ConnectionStore(settingsRoot,safeStorage);reaConnection=new ReaConnectionStore(settingsRoot);const getConfig=async()=>{const ai=await connection.config(),engine=await reaConnection.config();const config={...ai,...engine,browser:engine.browser||ai.browser};config.nativeSetupCheck=(target,session)=>nativeCheck.current(target,engine,session);config.nativeSetupPolicy=await readNativePolicy(engine);config.captureBrowser=captureBrowser;config.selectedAccess=selectedAccess;const verified=await connection.read();config.recoveryVerification=verified.verification==='model-response'?verified.verifiedAt||'':'';return config;};
   const setup=async work=>{idle();if(setupController)throw new Error('A connection check is already running.');setupController=new AbortController();try{return await work(setupController.signal);}finally{setupController=null;}};
   const {selectFeature,savedStatus} = await import('./lib/selection.mjs');
   const {featureCollection,collectionIntent} = await import('./lib/collection.mjs');
@@ -54,12 +56,18 @@ app.whenReady().then(async () => {
   const {inventoryRecords} = await import('./lib/discovery-inventory.mjs');
   const {exportInvestigation,importInvestigation}=await import('./lib/archive.mjs');
   const {AgentSessionStore}=await import('./lib/agent-guide.mjs');
-  store=new InvestigationStore(root);let config;try{config=await getConfig();}catch{config={...runtimeConfig(),captureBrowser};}investigator=new Investigator(store,{config});
+  store=new InvestigationStore(root);let config;try{config=await getConfig();}catch{config={...runtimeConfig(),captureBrowser,selectedAccess};}investigator=new Investigator(store,{config,onEvidence:async state=>agentAccess?.refresh(state.id)});
   const {installProjectHandoffHost}=await import('./lib/project-handoff-host.mjs');installProjectHandoffHost({handle,store,idle,flushQueue:()=>draftQueue,dialog,getWindow:()=>window,documentsFolder:(()=>{try{return app.getPath('documents');}catch{return path.join(app.getPath('home'),'Documents');}})(),shell,clipboard});
   const {installMapImageHost}=await import('./lib/map-image-host.mjs');installMapImageHost({handle,dialog,getWindow:()=>window,store});
   const {installCoverageHost}=await import('./lib/coverage-host.mjs');installCoverageHost({handle,store});
   const {installAgentContextHost}=await import('./lib/agent-context-host.mjs');const agentContexts=installAgentContextHost({store,handle,dialog,getWindow:()=>window,idle,nativeImage});
-  agentGuide=new AgentSessionStore(store,{contexts:agentContexts,turn:async(state,question,{branchFeatureName,nodeId,signal,agentContext,resumeAiAttemptId,retryFailureAttemptId})=>{investigator.config=await getConfig();await investigator.turn(state,question,{preserveDraft:true,signal,branchFeatureName,nodeId,agentContext,resumeAiAttemptId,retryFailureAttemptId,onProgress:text=>window.webContents.send('activity',text)});return store.read(state.id);}});
+  let agentAccess,followUps;
+  const agentUpdate=async(session,investigation)=>{const id=session?.investigationId||investigation?.id;if(id){await agentAccess?.refresh(id,session);if(followUps){await followUps.refresh(id);const control=await followUps.sync(id,{session});if(window&&!window.isDestroyed())window.webContents.send('agent-control-update',{investigationId:id,control});}}if(window&&!window.isDestroyed())window.webContents.send('agent-update',{session,investigation});};
+  agentGuide=new AgentSessionStore(store,{contexts:agentContexts,getConfig,beforeStep:async(id,options)=>{await agentAccess?.boundary(id,options);},onControl:async(investigationId,control)=>{if(followUps){await followUps.refresh(investigationId);control=await followUps.sync(investigationId,{session:await agentGuide.read(investigationId)});}if(window&&!window.isDestroyed())window.webContents.send('agent-control-update',{investigationId,control});},turn:async(state,question,{branchFeatureName,nodeId,signal,agentContext,resumeAiAttemptId,retryFailureAttemptId})=>{investigator.config=await getConfig();await investigator.turn(state,question,{preserveDraft:true,signal,branchFeatureName,nodeId,agentContext,resumeAiAttemptId,retryFailureAttemptId,onProgress:text=>window.webContents.send('activity',text)});return store.read(state.id);}});
+  const {installAgentAccessHost}=await import('./lib/agent-access-host.mjs');agentAccess=installAgentAccessHost({handle,store,guide:agentGuide,manager:selectedAccess,idle,isBusy:()=>!!active||!!setupController,runIdle:async work=>{idle();const controller=new AbortController();active=controller;try{await draftQueue;return await work(controller.signal);}finally{if(active===controller)active=null;}},onUpdate:agentUpdate});
+  const {AgentFollowUpStore}=await import('./lib/agent-followups.mjs');followUps=new AgentFollowUpStore(agentGuide.control,store);
+  handle('agent-followup-save',async(id,pathId)=>{await followUps.save(id,pathId);const control=await followUps.refresh(id);await agentGuide.onControl(id,control);return control;});
+  handle('agent-followup-list',()=>followUps.listSaved());
   const {installDocumentHost}=await import('./lib/document-host.mjs');
   const activeFile=path.join(root,'.active-investigation.json');
   const activate=async id=>{store.directory(id);const temporary=path.join(root,`.active-${require('node:crypto').randomUUID()}.tmp`);try{await fs.writeFile(temporary,JSON.stringify({id}));await fs.rename(temporary,activeFile);currentId=id;}catch(error){await fs.rm(temporary,{force:true});throw error;}};
@@ -177,6 +185,8 @@ app.whenReady().then(async () => {
     if(record.sha256&&require('node:crypto').createHash('sha256').update(raw).digest('hex')!==record.sha256)throw new Error('The saved snapshot no longer matches its recorded hash.');
     return {text:raw.slice(0,250000),truncated:raw.length>250000};
   });
+  const {createEvidenceMetadataReader}=await import('./lib/evidence-metadata-host.mjs');
+  handle('evidence-metadata',createEvidenceMetadataReader(store));
   handle('select', async (id,messageId,featureName) => {
     idle();let result;
     const operation=async()=>{const state=await store.read(id);if(messageId===null&&featureName===null)state.selection=null;else selectFeature(state,messageId,featureName);await store.save(state);result=state;};
@@ -218,8 +228,8 @@ app.whenReady().then(async () => {
     try {
     await draftQueue;controller.signal.throwIfAborted();version.assertCurrent();
     const state = await store.read(id),localCollection=collectionIntent(state,text);if(!localCollection&&distributedMode&&!(await connection.view()).configured)throw new Error('Open Setup and connect an agent before starting an investigation.');if(branchFeatureName!==undefined&&branchFeatureName!==null&&(typeof branchFeatureName!=='string'||!inventoryRecords(state).some(record=>record.row.name.trim().toLowerCase()===branchFeatureName.trim().toLowerCase())))throw new Error('That feature is not in this investigation.');
-    controller.signal.throwIfAborted();if(!localCollection)investigator.config=await getConfig();controller.signal.throwIfAborted();await investigator.turn(state, text, { signal: controller.signal, preserveDraft:!!options.preserveDraft,branchFeatureName,parentResultId:options.parentResultId,parentNodeId:options.parentNodeId,nodeId:options.nodeId,continuing:!!options.continuing,recoveryAttemptId:options.recoveryAttemptId,resumeAiAttemptId:options.resumeAiAttemptId,resumeInterruptedAttemptId:options.resumeInterruptedAttemptId,retryFailureAttemptId:options.retryFailureAttemptId,collectionRequestId:options.collectionRequestId,collectionChoice:options.collectionChoice, onProgress: text => { if (!window.isDestroyed()) window.webContents.send('activity', text); } });if(!options.preserveDraft&&!state.collectionCommandResult&&state.preflight?.status!=='blocked')await store.updateWorkspace(id,{draft:'',draftContext:null});await draftQueue;const saved=await store.read(id);return {...saved,...(state.collectionCommandResult?{collectionCommandResult:state.collectionCommandResult}:{}),...(state.collectionSaveError?{collectionSaveError:state.collectionSaveError}:{})}; }
-    finally { if(active===controller)active = null; }
+    controller.signal.throwIfAborted();if(!localCollection)investigator.config=await getConfig();controller.signal.throwIfAborted();await investigator.turn(state, text, { signal: controller.signal, preserveDraft:!!options.preserveDraft,branchFeatureName,parentResultId:options.parentResultId,parentNodeId:options.parentNodeId,nodeId:options.nodeId,continuing:!!options.continuing,recoveryAttemptId:options.recoveryAttemptId,resumeAiAttemptId:options.resumeAiAttemptId,resumeInterruptedAttemptId:options.resumeInterruptedAttemptId,retryFailureAttemptId:options.retryFailureAttemptId,collectionRequestId:options.collectionRequestId,collectionChoice:options.collectionChoice,applicationMode:options.applicationMode,applicationRunId:options.applicationRunId,additionalTurns:options.additionalTurns,automation:options.automation, onProgress: text => { if (!window.isDestroyed()) window.webContents.send('activity', text); } });if(!options.preserveDraft&&!state.collectionCommandResult&&state.preflight?.status!=='blocked')await store.updateWorkspace(id,{draft:'',draftContext:null});await draftQueue;const saved=await store.read(id);return {...saved,...(state.collectionCommandResult?{collectionCommandResult:state.collectionCommandResult}:{}),...(state.collectionSaveError?{collectionSaveError:state.collectionSaveError}:{})}; }
+    finally { if(active===controller)active = null;await agentAccess.refresh(id).catch(()=>{}); }
   });
   const savedComparisons=await import('./lib/saved-comparison.mjs');
   handle('comparison-candidates',async(options={})=>{await draftQueue;return savedComparisons.listComparisonCandidates(store,options);});
@@ -247,15 +257,37 @@ app.whenReady().then(async () => {
     const {serializeWorkspaceMap}=await import('./lib/workspace-map.mjs');
     await fs.writeFile(result.filePath,JSON.stringify({schemaVersion:1,investigationId:state.id,exportedAt:new Date().toISOString(),root:graph.root,nodes,edges:graph.edges,workspaceMap:serializeWorkspaceMap(state)},null,2));return result.filePath;
   });
-  handle('stop', () => {active?.abort();setupController?.abort();});
+  handle('stop', async () => {active?.abort();setupController?.abort();await agentAccess.cancel(currentId);await agentGuide.stop(currentId);});
   handle('agent-status',id=>agentGuide.read(id));
+  handle('agent-control-read',async id=>{await agentGuide.readControl(id);await agentAccess.refresh(id);const control=await followUps.refresh(id);return control;});
+  const emitAgentSession=agentUpdate;
+  const wakeIdleMessages=async id=>{
+    if(id!==currentId||active||setupController||agentGuide.activeRun||agentGuide.processing.has(id))return;
+    const control=await agentGuide.control.read(id);
+    if(control.messages.some(message=>message.role==='user'&&message.status==='queued'))setImmediate(()=>processIdleMessages(id).catch(()=>{}));
+  };
+  const processIdleMessages=async id=>{
+    if(id!==currentId||active||setupController||agentGuide.activeRun||agentGuide.processing.has(id))return;
+    const controller=new AbortController();active=controller;
+    try{await agentAccess.refresh(id);await agentGuide.processMessages(id,{signal:controller.signal,onUpdate:emitAgentSession});}
+    catch(error){if(!controller.signal.aborted){await agentGuide.control.hold(id,'Message processing ended before the direction could be applied.');const control=await agentGuide.control.append(id,{role:'system',kind:'error',text:error.message||'This message could not be processed. Your text and findings are kept.'});await agentGuide.onControl(id,control);}}
+    finally{if(active===controller)active=null;await wakeIdleMessages(id);}
+  };
+  handle('agent-message',async(id,message)=>{
+    if(id!==currentId)throw Error('The active investigation changed. Your message is kept in the input.');
+    const control=await agentGuide.submitMessage(id,message);
+    // Receipt never waits for a provider or an in-flight inspection. The run
+    // consumes its own inbox; idle questions use the same cancellable processor.
+    setImmediate(()=>processIdleMessages(id).catch(()=>{}));return control;
+  });
+  handle('agent-followup-explore',async(id,pathId,messageId)=>{if(id!==currentId)throw Error('Open this saved path’s investigation before exploring it.');await agentAccess.refresh(id);const result=await followUps.explore(id,pathId,{messageId});await agentGuide.onControl(id,result.control);setImmediate(()=>processIdleMessages(id).catch(()=>{}));return result;});
   handle('agent-folder',async()=>{idle();const result=await dialog.showOpenDialog(window,{title:'Choose your project folder (read only)',properties:['openDirectory']});return result.canceled?null:result.filePaths[0];});
   handle('agent-plan',async(id,goal,folder,replan=false,requestId,startingNodeId=null)=>{idle();version.assertCurrent();const controller=new AbortController();active=controller;activePlan={id,requestId,controller};try{await draftQueue;controller.signal.throwIfAborted();const config=await getConfig();controller.signal.throwIfAborted();const session=await agentGuide.propose(id,goal,folder,{config,signal:controller.signal,replan,startingNodeId});controller.signal.throwIfAborted();window.webContents.send('agent-update',{session});return session;}finally{if(active===controller)active=null;if(activePlan?.controller===controller)activePlan=null;}});
   handle('agent-plan-cancel',(id,requestId)=>{if(!requestId||activePlan?.id!==id||activePlan.requestId!==requestId)return false;activePlan.controller.abort();return true;});
   handle('agent-approve',async(id,ids,skipped)=>{idle();const session=await agentGuide.approve(id,ids,skipped);window.webContents.send('agent-update',{session});return session;});
-  handle('agent-start',async id=>{idle();const controller=new AbortController();active=controller;try{await draftQueue;controller.signal.throwIfAborted();version.assertCurrent();return await agentGuide.run(id,{signal:controller.signal,onUpdate:async(session,investigation)=>{if(!window.isDestroyed())window.webContents.send('agent-update',{session,investigation});}});}finally{if(active===controller)active=null;}});
+  handle('agent-start',async id=>{idle();const controller=new AbortController();active=controller;try{await draftQueue;controller.signal.throwIfAborted();version.assertCurrent();return await agentGuide.run(id,{signal:controller.signal,onUpdate:agentUpdate});}finally{if(active===controller)active=null;await wakeIdleMessages(id);}});
   handle('agent-pause',()=>agentGuide.pause());
-  handle('agent-stop',()=>{agentGuide.stop();active?.abort();});
+  handle('agent-stop',async()=>{active?.abort();await agentAccess.cancel(currentId);await agentGuide.stop(currentId);});
   handle('folder', async () => { const result = await dialog.showOpenDialog(window, { properties: ['openDirectory'], title: 'Choose a product source folder' }); return result.canceled ? null : result.filePaths[0]; });
   handle('source', async (id, evidenceId) => {
     const state = await store.read(id); const evidence = state.evidence.find(e => e.id === evidenceId);

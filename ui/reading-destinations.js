@@ -6,6 +6,7 @@ import {appendDelivery} from './delivery.js';
 import {productsFor,originsFor} from '../lib/collection.mjs';
 import {recordedParts} from '../lib/recorded-parts.mjs';
 import {appendFindingCategory,appendCategoryKey} from './finding-category.js';
+import {appendResponseUnderstanding,appendFindingContext} from './evidence-understanding.js';
 const el=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;};
 const button=(text,run)=>{const n=el('button',text,'text-button');n.type='button';n.onclick=run;return n;};
 export function renderReading(view,panel,record,result){
@@ -31,6 +32,7 @@ export function renderReading(view,panel,record,result){
   if(destination==='summary'&&direction)view.guidance(panel,view.ws.inspected);
   if(activeSavedStep(view,view.ws.inspected||record?.id))panel.append(el('small','Previous saved result — the current step has not returned a new result.','basis-label'));
   panel.append(el('h2',shown.overview||shown.understanding||shown.text||'Saved finding'),el('small',`Saved result ${shown.id} · ${shown.createdAt||'Time not recorded'}`));
+  appendResponseUnderstanding(view,panel,shown);
   view.renderInspectionBoundary(panel,shown);
   if(shown.auditScope?.noNewInspection||shown.newEvidenceCount===0)panel.append(el('p','This saved result used retained evidence without fresh source inspection.','material-limit'));
   if(shown.caveat)panel.append(el('p',shown.caveat,'material-limit'));
@@ -38,6 +40,7 @@ export function renderReading(view,panel,record,result){
   for(const finding of shown.findings||[]){
     const section=el('section',undefined,'finding-reading-row');section.append(el('h3',finding.question||'Saved finding'));
     appendFindingCategory(section,view.state,shown,finding);section.append(el('p',finding.finding||''));
+    appendFindingContext(view,section,shown,finding);
     if(destination==='latest')section.append(el('small',finding.change?`Recorded change: ${finding.change}`:'No change metadata was recorded.'));
     const claims=[...new Set(finding.claimIndexes||[])].map(index=>shown.claims?.[index]).filter(Boolean);
     if(claims.length){const support=el('details');support.append(el('summary','Supporting evidence and reasoning'));for(const claim of claims)view.support(support,claim);section.append(support);}

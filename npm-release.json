@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "releaseVersion": "0.3.0-preview.20261025.6",
+  "releaseVersion": "0.3.0-preview.20261027.1",
   "platform": "win32-x64",
-  "sourceCommit": "0c064cd421a4930b8f985c4ab294ebf7b97de029"
+  "sourceCommit": "6b8a2307749bfc2549220aaab98e33b907feec93"
 }

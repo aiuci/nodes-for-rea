@@ -1,6 +1,6 @@
 {
   "name": "nodes-for-rea",
-  "version": "0.3.0-preview.20261025.6",
+  "version": "0.3.0-preview.20261027.1",
   "description": "A persistent visual workspace for exploring software with REA and your connected AI agent.",
   "private": false,
   "license": "AGPL-3.0-only",

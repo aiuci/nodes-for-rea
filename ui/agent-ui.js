@@ -3,15 +3,17 @@
 import {renderUserError,clearUserError} from './user-feedback.js';
 import {explainFailure} from '../lib/failure-recovery.mjs';
 import {createWorkClock} from './work-clock.js';
-import {createAgentFollow} from './agent-follow.js';
+import {installAgentIdleReturn} from './agent-idle-return.js';
+import {installAgentInsights} from './agent-insight-ui.js';
 import {renderAgentPlanner} from './agent-planner.js';
 import {AGENT_GOAL_LIMIT} from '../lib/agent-goal.mjs';
 import {installGoalVoice} from './goal-voice.js';
 import {installAgentContextUI} from './agent-context-ui.js';
+import {installAgentConversation} from './agent-conversation.js';
 const $=id=>document.getElementById(id);
 export function installAgentUI({api,getState,acceptState,graphView,isManualBusy,setAgentBusy,notify}){
-  let session=null,folder=null,follow=true,pending=false,runPending=false,loadedId=null,voiceBusy=false,updateRevision=0,planning=null,planMessage='',planError=null;
-  const follower=createAgentFollow(graphView);
+  let session=null,folder=null,follow=true,pending=false,runPending=false,loadedId=null,voiceBusy=false,accessBusy=false,updateRevision=0,planning=null,planMessage='',planError=null;
+  const idleReturn=installAgentIdleReturn({view:graphView,getSession:()=>session,getInvestigationId:()=>getState()?.id,onStateChange:()=>queueMicrotask(()=>{$('agent-return').hidden=session?.status!=='running'||!idleReturn.suspended;})});
   const goalDrafts=new Map(),startingContexts=new Map();let requestedContext=null,loadPromise=Promise.resolve();
   const contextInput=installAgentContextUI({api,getState,notify:message=>{contextDetails.open=true;if(message&&typeof message==='object')renderUserError($('agent-context-status'),message,{context:'attachment'});else clearUserError($('agent-context-status'),message);notify(message);},onChange:()=>{if(session?.status!=='running'){folder=contextInput.projectFolder;session=null;if(!planning){planMessage='';planClock.clear();}sync();}}});
   const contextDetails=document.createElement('details');contextDetails.className='agent-context-options';
@@ -48,6 +50,12 @@ export function installAgentUI({api,getState,acceptState,graphView,isManualBusy,
   const accessBody=document.createElement('section');accessBody.className='agent-access-options';const accessTitle=document.createElement('h4');accessTitle.textContent='Read-only source limits';accessBody.append(accessTitle,...[...access.children].filter(n=>n.tagName!=='SUMMARY'));access.remove();contextDetails.append(accessBody,scopeNote,approvalHint);
   const recoveryConnection=document.createElement('button');recoveryConnection.type='button';recoveryConnection.textContent='Check AI connection';recoveryConnection.onclick=()=>$('connection-open').click();$('agent-issue').after(recoveryConnection);
   const diagnose=document.createElement('button');diagnose.type='button';diagnose.textContent='Diagnose failed step';recoveryConnection.after(diagnose);diagnose.onclick=async()=>{if(!session?.failureAttemptId)return;try{const updated=await api.diagnoseFailure(getState().id,session.failureAttemptId);acceptState(updated);sync();}catch(error){fail(error);}};
+  // Conversation remains usable while the saved goal/route is running. Keep the
+  // original goal as setup details, not a second competing active command field.
+  const conversation=installAgentConversation({api,getState,panel,notify,onChange:({working})=>{$('agent-stop').hidden=session?.status!=='running'&&!working&&!accessBusy;}});
+  const insights=installAgentInsights({api,getState,acceptState,panel,graphView,notify,onExplore:()=>{showPanel(true);},onBusy:value=>{accessBusy=value;$('agent-stop').hidden=session?.status!=='running'&&!conversation.working&&!accessBusy;}});
+  const goalDetails=document.createElement('details');goalDetails.className='agent-goal-setup';goalDetails.open=true;const goalSummary=document.createElement('summary');goalSummary.textContent='Goal and route setup';composer.before(goalDetails);goalDetails.append(goalSummary,composer);
+  panel.querySelector('.agent-head').insertBefore($('agent-stop'),$('agent-close'));
   new MutationObserver(()=>{if($('agent-context-status').textContent&&/error|failed|cannot|exceed|unavailable/i.test($('agent-context-status').textContent))contextDetails.open=true;}).observe($('agent-context-status'),{childList:true,subtree:true});
   const voice=installGoalVoice({api,getContext:()=>getState()?.id,rememberDraft:value=>goalDrafts.set(getState()?.id,value),onBusy:value=>{voiceBusy=value;sync();}});
   $('agent-goal').addEventListener('input',()=>goalDrafts.set(getState()?.id,$('agent-goal').value));
@@ -79,7 +87,7 @@ export function installAgentUI({api,getState,acceptState,graphView,isManualBusy,
     $('agent-selection-tools').hidden=!same||status!=='proposed';
     $('agent-start').textContent=status==='paused'?(session?.aiRecovery?'Resume saved step':'Resume route'):'Agent, take the wheel →';
     $('agent-start').hidden=!same||!['approved','paused'].includes(status);$('agent-start').disabled=!!requestedContext||voiceBusy||contextInput.busy||pending||isManualBusy()||runPending||!session?.route?.some(s=>s.status==='pending')||session?.aiRecovery?.canResume===false||!!session?.failure&&!session?.failureAttemptId||!!session?.failureAttemptId&&(!current.attempts?.find(a=>a.id===session.failureAttemptId)?.recovery?.diagnostic?.canRetry||current.attempts?.find(a=>a.id===session.failureAttemptId)?.recovery?.diagnostic?.used);
-    $('agent-pause').hidden=status!=='running';$('agent-stop').hidden=status!=='running';$('agent-return').hidden=status!=='running'||follow;
+    $('agent-pause').hidden=status!=='running';$('agent-stop').hidden=status!=='running';$('agent-return').hidden=status!=='running'||!idleReturn.suspended;
     renderAgentPlanner(route,same?session:null,current,{pending,onChange:sync,onSource:id=>api.showSource(current.id,id),fail});
     $('agent-selection-count').textContent=same?`${session.route?.filter(s=>s.status!=='skipped').length||0} of ${session.route?.length||0} directions included`:'';
     recoveryConnection.hidden=!same||(!session?.aiRecovery&&!session?.failure)||status!=='paused';
@@ -90,24 +98,22 @@ export function installAgentUI({api,getState,acceptState,graphView,isManualBusy,
     const line=$('agent-status-line');line.hidden=!!planning||!pending&&(!same||!['running','paused','stopped','complete'].includes(status));
     if(pending&&!planning)line.textContent='Agent · Saving route approval.';
     else if(!line.hidden){const active=session.route?.find(s=>s.nodeId===session.currentNode&&s.status==='pending');line.textContent=status==='running'&&active?`Agent · ${active.action==='reveal'?'Showing':'Investigating'} ${active.title}. ${active.why}`:`Agent · ${session.stopReason||status}`;}
+    conversation.sync(same?session:null);
+    insights.sync(same?session:null);idleReturn.update();
   };
-  const focus=()=>graphView.navigation?.autoFollow===false?false:follower.update(session,getState()?.id);
   const receive=async payload=>{if(!payload?.session||payload.session.investigationId!==getState()?.id)return;
     if(planning?.cancelled&&payload.session.status==='proposed')return;
     if(session?.updatedAt&&payload.session.updatedAt&&payload.session.updatedAt<session.updatedAt)return;
     const firstActiveNode=session?.status!=='running'||!session?.currentNode;
     updateRevision++;session=payload.session;
-    if(runPending&&firstActiveNode&&session.status==='running'&&session.currentNode&&!$('agent-panel').hidden)showPanel(false);
+    if(firstActiveNode&&session.status==='running'&&session.currentNode)goalDetails.open=false;
     graphView.runningNode=session.status==='running'?session.currentNode:null;
     if(payload.investigation)acceptState(payload.investigation);
-    sync();if(session.status==='running'){graphView.draw();await focus();}
-    else{follower.reset();if(runPending){runPending=false;setAgentBusy(false);}graphView.finished?.();}
+    sync();if(session.status==='running'){graphView.draw();idleReturn.update();}
+    else{idleReturn.cancel();if(runPending){runPending=false;setAgentBusy(false);}graphView.finished?.();}
   };
-  const retryTimer=setInterval(()=>{if(session?.status==='running'&&follow)focus();},450);
-  window.addEventListener('beforeunload',()=>{clearInterval(retryTimer);planClock.stop();},{once:true});
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&follow)focus();});
-  const browsing=()=>{if(session?.status==='running'&&follow){graphView.navigation?.setAutoFollow(false,false);follow=false;follower.pause();sync();}};
-  for(const id of ['workspace-canvas','workspace-outline','map-layout','workspace-navigation'])for(const type of ['pointerdown','wheel','keydown'])$(id)?.addEventListener(type,event=>{if(event.isTrusted&&!event.target.closest('#canvas-navigation,#canvas-navigation-options,#canvas-minimap'))browsing();},{capture:true,passive:true});
+  window.addEventListener('beforeunload',()=>{idleReturn.destroy();planClock.stop();},{once:true});
+  const browsing=()=>{if(session?.status==='running'){idleReturn.browse();sync();}};
   api.onAgentUpdate(receive);
   $('agent-open').onclick=()=>showPanel($('agent-panel').hidden);
   $('agent-close').onclick=()=>showPanel(false);
@@ -128,14 +134,14 @@ export function installAgentUI({api,getState,acceptState,graphView,isManualBusy,
   };
   $('agent-plan').onclick=()=>plan(false);$('agent-replan').onclick=()=>plan(true);
   const approve=async()=>{const id=getState()?.id;if(requestedContext||!session||session.status!=='proposed'||(session.startingNode?.nodeId||null)!==(startingContexts.get(id)?.nodeId||null)||pending||voiceBusy||contextInput.busy)return false;pending=true;sync();try{const ids=session.route.map(s=>s.id),skipped=session.route.filter(s=>s.status==='skipped').map(s=>s.id);const approved=await api.agentApprove(id,ids,skipped);if(getState()?.id!==id)return false;session=approved;return true;}catch(error){fail(error);return false;}finally{pending=false;sync();}};
-  const start=async()=>{if(session?.failureAttemptId&&!confirm('Retry the failed step once? This may repeat inspection work and use your AI service. Saved evidence is retained.'))return;if(requestedContext||(session?.startingNode?.nodeId||null)!==(startingContexts.get(getState()?.id)?.nodeId||null)||runPending||pending||voiceBusy||contextInput.busy||isManualBusy())return;const id=getState()?.id,revision=updateRevision;runPending=true;follow=true;graphView.navigation?.setAutoFollow(true,false);follower.resume();setAgentBusy(true);sync();try{const result=await api.agentStart(id);if(getState()?.id===id&&updateRevision===revision)session=result;}catch(error){fail(error);}finally{runPending=false;setAgentBusy(false);sync();}};
+  const start=async()=>{if(session?.failureAttemptId&&!confirm('Retry the failed step once? This may repeat inspection work and use your AI service. Saved evidence is retained.'))return;if(requestedContext||(session?.startingNode?.nodeId||null)!==(startingContexts.get(getState()?.id)?.nodeId||null)||runPending||pending||voiceBusy||contextInput.busy||isManualBusy())return;const id=getState()?.id,revision=updateRevision;runPending=true;idleReturn.resume();setAgentBusy(true);sync();try{const result=await api.agentStart(id);if(getState()?.id===id&&updateRevision===revision)session=result;}catch(error){fail(error);}finally{runPending=false;setAgentBusy(false);sync();}};
   $('agent-run-selected').onclick=async()=>{if(!session?.route.some(s=>s.status!=='skipped'))return;if(await approve())await start();};
   $('agent-start').onclick=start;
-  $('agent-pause').onclick=()=>api.agentPause().catch(fail);
-  $('agent-stop').onclick=()=>api.agentStop().catch(fail);
-  const returnToActive=()=>{if(session?.status!=='running'||!session.currentNode)return false;graphView.navigation?.setAutoFollow(true,false);follow=true;follower.resume();const result=focus();sync();return result;};
+  $('agent-pause').onclick=()=>{idleReturn.cancel();api.agentPause().catch(fail);};
+  $('agent-stop').onclick=()=>{idleReturn.cancel();api.agentStop().catch(fail);};
+  const returnToActive=()=>idleReturn.returnToActive();
   $('agent-return').onclick=returnToActive;
-  const loadState=async id=>{if(planning&&planning.id!==id)cancelPlanning();loadedId=id;requestedContext=null;voice.cancel();planMessage='';if(!planning)planClock.clear();$('agent-goal').value=goalDrafts.get(id)??'';session=null;folder=null;follow=true;follower.resume();sync();try{const loaded=await api.agentStatus(id);if(getState()?.id===id){session=loaded;if(!startingContexts.has(id))startingContexts.set(id,loaded?.startingNode||null);folder=loaded?.projectFolder||null;const value=await contextInput.load(id,{goalDraft:goalDrafts.get(id),savedGoal:loaded?.goal||'',projectFolder:loaded?.projectFolder||null});if(getState()?.id!==id)return;if(value!==undefined){folder=contextInput.projectFolder;goalDrafts.set(id,value);const current=contextInput.items().map(i=>i.id).sort(),approved=(session?.context?.items||[]).map(i=>i.id).sort();if(session&&(value!==session.goal||folder!==(session.projectFolder||null)||JSON.stringify(current)!==JSON.stringify(approved)))session=null;}sync();}}catch(error){fail(error);}};
+  const loadState=async id=>{idleReturn.cancel();if(planning&&planning.id!==id)cancelPlanning();loadedId=id;requestedContext=null;voice.cancel();planMessage='';if(!planning)planClock.clear();$('agent-goal').value=goalDrafts.get(id)??'';session=null;folder=null;sync();try{const loaded=await api.agentStatus(id);if(getState()?.id===id){session=loaded;if(!startingContexts.has(id))startingContexts.set(id,loaded?.startingNode||null);folder=loaded?.projectFolder||null;const value=await contextInput.load(id,{goalDraft:goalDrafts.get(id),savedGoal:loaded?.goal||'',projectFolder:loaded?.projectFolder||null});if(getState()?.id!==id)return;if(value!==undefined){folder=contextInput.projectFolder;goalDrafts.set(id,value);const current=contextInput.items().map(i=>i.id).sort(),approved=(session?.context?.items||[]).map(i=>i.id).sort();if(session&&(value!==session.goal||folder!==(session.projectFolder||null)||JSON.stringify(current)!==JSON.stringify(approved)))session=null;}sync();}}catch(error){fail(error);}};
   const load=id=>(loadPromise=loadState(id));
   const openFromFeature=async({investigationId,nodeId})=>{
     if(getState()?.id!==investigationId)return;
@@ -146,7 +152,7 @@ export function installAgentUI({api,getState,acceptState,graphView,isManualBusy,
     if(at?.nodeId!==nodeId){if(at||session||$('agent-goal').value.trim()||contextLocked())requestedContext=next;else startingContexts.set(investigationId,next);}
     sync();showPanel(true);
   };
-  return {openFromFeature,returnToActive,setFollowing(value){follow=!!value;if(follow){follower.resume();focus();}else follower.pause();sync();},get activeNodeId(){return session?.status==='running'?session.currentNode:null;},get running(){return session?.status==='running';},activity:text=>{if(session?.status==='running'){graphView.runPhase=text;graphView.runProgress=text;document.querySelectorAll('.growing-node.running .node-run-phase').forEach(n=>{n.textContent=text;n.title=text;});}},refresh:()=>{if(getState()?.id!==loadedId)load(getState()?.id);else sync();},browsing,load};
+  return {openFromFeature,returnToActive,setFollowing(value){graphView.navigation?.setAutoFollow(!!value,false);idleReturn.update();sync();},get activeNodeId(){return session?.status==='running'?session.currentNode:null;},get running(){return session?.status==='running';},activity:text=>{if(session?.status==='running'){graphView.runPhase=text;graphView.runProgress=text;document.querySelectorAll('.growing-node.running .node-run-phase').forEach(n=>{n.textContent=text;n.title=text;});}},refresh:()=>{if(getState()?.id!==loadedId)load(getState()?.id);else sync();},browsing,load};
 }
 
 

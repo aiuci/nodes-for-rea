@@ -1,0 +1,196 @@
+{
+  "version": 1,
+  "root": "core",
+  "nodes": [
+    {
+      "id": "core",
+      "type": "root",
+      "title": "Owned evidence-aware fixture",
+      "summary": "Sources, focus areas and saved work",
+      "parent": null
+    },
+    {
+      "id": "turn:fixture-response",
+      "type": "result",
+      "title": "Fixture observation 1",
+      "summary": "Synthetic retained observations and unresolved questions.",
+      "parent": "core",
+      "messageId": "fixture-response",
+      "legacyOrder": false
+    },
+    {
+      "id": "finding:fixture-response:0",
+      "type": "finding",
+      "title": "Fixture observation 1",
+      "summary": "The fixture enters its update pipeline.",
+      "parent": "turn:fixture-response",
+      "messageId": "fixture-response",
+      "finding": {
+        "question": "Fixture observation 1",
+        "finding": "The fixture enters its update pipeline.",
+        "change": "new",
+        "claimIndexes": [
+          0
+        ]
+      },
+      "supported": true
+    },
+    {
+      "id": "finding:fixture-response:1",
+      "type": "finding",
+      "title": "Fixture observation 2",
+      "summary": "The fixture uses a sensor-shaped structure.",
+      "parent": "turn:fixture-response",
+      "messageId": "fixture-response",
+      "finding": {
+        "question": "Fixture observation 2",
+        "finding": "The fixture uses a sensor-shaped structure.",
+        "change": "new",
+        "claimIndexes": [
+          1
+        ]
+      },
+      "supported": true
+    },
+    {
+      "id": "finding:fixture-response:2",
+      "type": "finding",
+      "title": "Fixture observation 3",
+      "summary": "A reference points to the fixture collection.",
+      "parent": "turn:fixture-response",
+      "messageId": "fixture-response",
+      "finding": {
+        "question": "Fixture observation 3",
+        "finding": "A reference points to the fixture collection.",
+        "change": "new",
+        "claimIndexes": [
+          2
+        ]
+      },
+      "supported": true
+    },
+    {
+      "id": "finding:fixture-response:3",
+      "type": "finding",
+      "title": "Unmatched name search",
+      "summary": "No match in this bounded search; behavior absence is not established.",
+      "parent": "turn:fixture-response",
+      "messageId": "fixture-response",
+      "finding": {
+        "question": "Unmatched name search",
+        "finding": "No match in this bounded search; behavior absence is not established.",
+        "change": "gap",
+        "claimIndexes": [
+          3
+        ]
+      },
+      "supported": true
+    },
+    {
+      "id": "finding:fixture-response:4",
+      "type": "finding",
+      "title": "Operation order",
+      "summary": "The order remains unverified.",
+      "parent": "turn:fixture-response",
+      "messageId": "fixture-response",
+      "finding": {
+        "question": "Operation order",
+        "finding": "The order remains unverified.",
+        "change": "gap",
+        "claimIndexes": []
+      },
+      "supported": false
+    },
+    {
+      "id": "finding:fixture-response:5",
+      "type": "finding",
+      "title": "Identity across refresh",
+      "summary": "Object identity across refresh remains unverified.",
+      "parent": "turn:fixture-response",
+      "messageId": "fixture-response",
+      "finding": {
+        "question": "Identity across refresh",
+        "finding": "Object identity across refresh remains unverified.",
+        "change": "gap",
+        "claimIndexes": []
+      },
+      "supported": false
+    },
+    {
+      "id": "direction:fixture-response:0",
+      "type": "direction",
+      "title": "Trace the fixture lifecycle before drawing a runtime conclusion.",
+      "summary": "Available investigation · runs only when chosen",
+      "parent": "turn:fixture-response",
+      "messageId": "fixture-response",
+      "request": "Trace the fixture lifecycle before drawing a runtime conclusion."
+    }
+  ],
+  "edges": [
+    {
+      "from": "core",
+      "to": "turn:fixture-response",
+      "relation": "branches"
+    },
+    {
+      "from": "turn:fixture-response",
+      "to": "finding:fixture-response:0",
+      "relation": "branches"
+    },
+    {
+      "from": "turn:fixture-response",
+      "to": "finding:fixture-response:1",
+      "relation": "branches"
+    },
+    {
+      "from": "turn:fixture-response",
+      "to": "finding:fixture-response:2",
+      "relation": "branches"
+    },
+    {
+      "from": "turn:fixture-response",
+      "to": "finding:fixture-response:3",
+      "relation": "branches"
+    },
+    {
+      "from": "turn:fixture-response",
+      "to": "finding:fixture-response:4",
+      "relation": "branches"
+    },
+    {
+      "from": "turn:fixture-response",
+      "to": "finding:fixture-response:5",
+      "relation": "branches"
+    },
+    {
+      "from": "turn:fixture-response",
+      "to": "direction:fixture-response:0",
+      "relation": "branches"
+    }
+  ],
+  "positions": {
+    "core": {
+      "x": 0,
+      "y": 0,
+      "width": 220,
+      "height": 66
+    }
+  },
+  "camera": {
+    "x": 10,
+    "y": 20,
+    "scale": 1
+  },
+  "layout": "spiral",
+  "layouts": {},
+  "panel": null,
+  "outline": false,
+  "outlineFollow": true,
+  "outlineExpanded": [],
+  "outlineWidth": 245,
+  "processMap": false,
+  "reader": null,
+  "deletedNodes": [],
+  "hidden": [],
+  "collapsed": []
+}

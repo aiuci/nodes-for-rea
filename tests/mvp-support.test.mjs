@@ -32,7 +32,7 @@ test('view permission failures and damaged canonical research remain explicit er
 
 async function handlers(){
  const source=await fs.readFile(new URL('../main.cjs',import.meta.url),'utf8'),registered={};
- const context=vm.createContext({AbortController,active:null,setupController:null,draftQueue:Promise.resolve(),handle:(name,fn)=>registered[name]=fn,version:{assertCurrent(){}},portableMode:false,distributedMode:false,collectionIntent:()=>false,deletedIds:new Set(),store:{read:async()=>({id:'owned',messages:[]}),updateWorkspace:async()=>{}},getConfig:async()=>({}),investigator:{turn:async()=>{}},window:{isDestroyed:()=>true}});
+ const context=vm.createContext({AbortController,active:null,setupController:null,draftQueue:Promise.resolve(),handle:(name,fn)=>registered[name]=fn,version:{assertCurrent(){}},portableMode:false,distributedMode:false,collectionIntent:()=>false,deletedIds:new Set(),store:{read:async()=>({id:'owned',messages:[]}),updateWorkspace:async()=>{}},getConfig:async()=>({}),investigator:{turn:async()=>{}},agentAccess:{refresh:async()=>{}},wakeIdleMessages:async()=>{},window:{isDestroyed:()=>true}});
  vm.runInContext("function idle(){if(active)throw Error('busy');}",context);
  for(const [start,end]of [["handle('turn',","\n  });"],["handle('draft',","handle('workspace',"],["handle('audit',","handle('export-graph',"],["handle('finalize',","handle('verify',"],["handle('verify',","handle('connection-info',"],["handle('agent-start',","handle('agent-pause',"]]){
   const begin=source.indexOf(start),finish=source.indexOf(end,begin);

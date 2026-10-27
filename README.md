@@ -39,6 +39,14 @@ against their supporting sources.
 **Windows x64 preview.** Start with a gentle, optional four-step tour. You can
 pause it, resume later, or open it from Settings â†’ Help â†’ Quick tour.
 
+## October 27 preview
+
+Application-aware investigation with bounded, adaptive continuation: folder intake
+keeps application scope and cumulative allowance through selection and reopening.
+Investigate adapts within its allowance; **Continue automatically** separately
+controls further turns. Portable coverage-ID export is repaired.
+See the [release notes and validation limits](docs/releases/0.3.0-preview.20261027.1.md).
+
 ## Install and open
 
 Install a supported Node.js version (22.19+ in the 22.x line, 24.11+ in

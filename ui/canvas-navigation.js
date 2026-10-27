@@ -19,11 +19,11 @@ export function installCanvasNavigation(view){
   const selected=iconButton('workspace-fit-selection','Fit selection',paths.selection),active=iconButton('workspace-follow-active','Follow active node',paths.follow);
   const home=iconButton('workspace-redock-controls','Redock controls','M4 5h16v14H4ZM4 14h16M9 9l3 3 3-3M12 3v9');home.onclick=redockMagneticControls;home.hidden=true;bar.append(out,zoom,inside,all,selected,active);$('main').append(bar);installBottomToolbars();
   const history=[],prefs={autoFollow:true,minimap:false};try{Object.assign(prefs,JSON.parse(localStorage.getItem('nodes-camera-options')||'{}'));}catch{}
-  let callbacks={},scope='',restoring=false,geometry='',drag=null,areaMode=false,cameraArea;
+  let callbacks={},scope='',restoring=false,geometry='',drag=null,areaMode=false,cameraArea,temporaryBrowsing=()=>false;
   const savePrefs=()=>{try{localStorage.setItem('nodes-camera-options',JSON.stringify(prefs));}catch{}document.dispatchEvent(new Event('nodes-navigation-change'));};
   const remember=()=>{if(restoring||!view.state)return;const key=view.state.id+':'+view.ws.layout;if(scope!==key){scope=key;history.length=0;}const c={...view.camera};if(JSON.stringify(history.at(-1))!==JSON.stringify(c))history.push(c);if(history.length>20)history.shift();};
   const setFollow=(value,notify=true)=>{value=!!value;if(!value)view.growthRun=null;if(prefs.autoFollow===value)return;prefs.autoFollow=value;savePrefs();if(notify)callbacks.onFollow?.(value);sync();};
-  const manual=()=>{const changed=prefs.autoFollow;setFollow(false);if(changed)callbacks.onManual?.();};
+  const manual=()=>{view.cancelFocusMotion();if(temporaryBrowsing()){view.growthRun=null;callbacks.onManual?.();return;}const changed=prefs.autoFollow;setFollow(false);if(changed)callbacks.onManual?.();};
   const go=async(target,{previous=false}={})=>{if(!target)return false;manual();if(previous)restoring=true;try{return await view.animateCamera(target);}finally{restoring=false;sync();}};
   const action=(id,text,path,fn)=>{const b=iconButton(id,text,path);b.onclick=fn;bar.append(b);return b;};
   const previous=action('workspace-previous-view','Previous view',paths.previous,()=>{const c=history.pop();if(c)go(c,{previous:true});});
@@ -31,7 +31,7 @@ export function installCanvasNavigation(view){
   const reset=action('workspace-reset-zoom','Reset zoom to 100%',paths.reset,()=>go(zoomCamera(view.camera,1,center())));
   function toggle(id,text,path,onChange){const b=iconButton(id,text,path);b.checked=false;b.setAttribute('aria-pressed','false');b.onchange=()=>onChange(b.checked);b.onclick=()=>{b.checked=!b.checked;b.dispatchEvent(new Event('change'));};bar.append(b);return b;}
   const auto=toggle('workspace-auto-follow','Auto follow',paths.auto,value=>setFollow(value));
-  const lock=toggle('workspace-lock-view','Lock view',paths.lock,value=>{view.cameraLocked=value;view.cancelFocusMotion();if(value)manual();sync();document.dispatchEvent(new Event('nodes-navigation-change'));});
+  const lock=toggle('workspace-lock-view','Lock view',paths.lock,value=>{view.cameraLocked=value;view.cancelFocusMotion();if(value)setFollow(false);sync();document.dispatchEvent(new Event('nodes-navigation-change'));});
   const miniToggle=toggle('workspace-minimap','Minimap',paths.minimap,value=>{prefs.minimap=value;savePrefs();geometry='';draw();});
   const resetControls=action('workspace-reset-controls','Reset controls','M3 3h7v7H3ZM14 3h7v7h-7ZM3 14h7v7H3ZM14 14h7v7h-7Z',resetMagneticControls);
   bar.append(home,paintIcon($('workspace-fit'),'Tidy map',paths.tidy),paintIcon($('workspace-hidden'),'Show hidden branches',paths.hidden),paintIcon($('workspace-expand'),'Expand all branches',paths.expand));
@@ -90,5 +90,5 @@ export function installCanvasNavigation(view){
   }
   installWorkspaceCommands(view,{buttons:{out,inside,zoom,all,selected,active,home,previous,areaButton,reset,resetControls,help},toggles:[['navigate.auto-follow','Auto follow',auto],['navigate.lock','Lock view',lock],['navigate.minimap','Minimap',miniToggle]],resetControls:resetMagneticControls});
   installCanvasTidyMenu(view,canvas);
-  return {cancelArea(){if(!areaMode)return false;endArea();areaButton.setAttribute('aria-pressed','false');return true;},sync,draw,camera:paintCamera,remember,setAutoFollow:setFollow,get autoFollow(){return prefs.autoFollow&&!view.cameraLocked;},bind(value){callbacks=value;sync();},manual,snapshot:()=>({...prefs,locked:!!view.cameraLocked}),restore(value){if(!value)return;Object.assign(prefs,{autoFollow:!!value.autoFollow,minimap:!!value.minimap});view.cameraLocked=!!value.locked;savePrefs();geometry='';draw();}};
+  return {cancelArea(){if(!areaMode)return false;endArea();areaButton.setAttribute('aria-pressed','false');return true;},sync,draw,camera:paintCamera,remember,setAutoFollow:setFollow,setTemporaryBrowsing(predicate){temporaryBrowsing=typeof predicate==='function'?predicate:()=>false;},get autoFollow(){return prefs.autoFollow&&!view.cameraLocked;},bind(value){callbacks=value;sync();},manual,snapshot:()=>({...prefs,locked:!!view.cameraLocked}),restore(value){if(!value)return;Object.assign(prefs,{autoFollow:!!value.autoFollow,minimap:!!value.minimap});view.cameraLocked=!!value.locked;savePrefs();geometry='';draw();}};
 }

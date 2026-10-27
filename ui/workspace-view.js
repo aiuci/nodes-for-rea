@@ -9,6 +9,7 @@ import {renderSavedStep} from './saved-step-panel.js';
 import {renderReading,comparisonOrigins} from './reading-destinations.js';
 import {appendFindingCategory,appendCategoryKey,categoryBadge} from './finding-category.js';
 import {claimCategory} from '../lib/finding-category.mjs';
+import {appendResponseUnderstanding,appendFindingContext,appendNativeMetadata,syncNodeContexts,responseDisplayLabel,coverageHeading} from './evidence-understanding.js';
 import {MIN_STEPS,MAX_STEPS,normalizeStepLimit} from '../lib/auto-deepen.mjs';
 import {installMagneticControls,presetFocus} from './magnetic-controls.js';
 import {installWorkspaceUndo} from './workspace-undo.js';
@@ -44,7 +45,7 @@ import {inventoryRecords,inventoryCoverage} from '../lib/discovery-inventory.mjs
 import {workspaceMap,isVerificationConstraint,runnableDirections,savedDirections,branchStats,PREFLIGHT_NODE_ID,isConnectionBoundary,preflightUtilityPoint} from '../lib/workspace-map.mjs';
 import {reportConnector} from '../lib/report-connector.mjs';
 import {existingRadial,presentRadial,wireContextActions} from './radial-menu.js';
-import {featureOutcome,resultOutcome} from '../lib/outcomes.mjs';
+import {featureOutcome} from '../lib/outcomes.mjs';
 import {drawGrowingMap,drawGrowingWires,openMapNode,hiddenBranches,hideBranch,collapseBranch,revealMapPath} from './growing-map.js';
 import {settleAppearingNodes,cancelNodeSettling} from './node-settling.js';
 import {growthRoute} from '../lib/result-growth.mjs';
@@ -188,7 +189,7 @@ export class WorkspaceView {
     $('workspace-surface').removeAttribute('aria-labelledby');$('workspace-surface').dataset.view=view;
     $('subject-name').textContent=this.state.title==='New investigation'?'':recoveryTitle(this.state);$('subject-name').title=this.state.title;
     $('workspace-title').textContent=!hasData?'What do you want to understand?':this.subject();
-    const coverage=inventoryCoverage(this.state),review=coveragePlan(this.state);$('workspace-subtitle').textContent=!hasData?'Bring a website, application, or source folder.':`${coverage.discovered} discovered · ${coverage.investigated} investigated${coverage.candidates?` · ${coverage.candidates} candidates`:''} · ${review.reviewed}/${review.total} reviewed · Total coverage unknown`;$('workspace-subtitle').disabled=!hasData;$('workspace-subtitle').setAttribute('aria-label',`Coverage & cost: ${$('workspace-subtitle').textContent}`);
+    $('workspace-subtitle').textContent=!hasData?'Bring a website, application, or source folder.':coverageHeading(this.state);$('workspace-subtitle').disabled=!hasData;$('workspace-subtitle').setAttribute('aria-label',`Coverage & cost: ${$('workspace-subtitle').textContent}`);
     document.body.classList.toggle('empty-workspace',!hasData);$('welcome').hidden=true;$('workspace-navigation').hidden=!hasData;$('workspace-arrange-actions').hidden=!hasData;
     if(!hasData&&this.nodeOpen)this.askOpen=true;
     $('node-workbench').hidden=!this.nodeOpen;$('workspace-inspector').hidden=!this.nodeOpen;
@@ -314,7 +315,7 @@ export class WorkspaceView {
     if(!record)return;
     const current=featureOutcome(this.state,record.row.name);
     if(current.attempt)panel.append(el('small',current.label,'basis-label'),el('p',current.attempt.reason||'Inspection is in progress.','material-limit'));
-    if(result){panel.append(el('small',resultOutcome(this.state,result).label,'basis-label'),el('h2',result.overview||result.understanding||result.text||'Saved answer'));if(result.caveat)panel.append(el('p',result.caveat,'material-limit'));panel.append(button('Read latest answer',()=>this.openReader(`turn:${result.id}`),'text-button'));}
+    if(result){panel.append(el('small',responseDisplayLabel(this.state,result),'basis-label'),el('h2',result.overview||result.understanding||result.text||'Saved answer'));if(result.caveat)panel.append(el('p',result.caveat,'material-limit'));panel.append(button('Read latest answer',()=>this.openReader(`turn:${result.id}`),'text-button'));}
     this.guidance(panel,item?.id||record.id);
     const descriptionPanel=result?el('details'):panel;if(result){descriptionPanel.append(el('summary','Original discovery and support'));panel.append(descriptionPanel);}
     const basis=record.row.evidenceBasis;descriptionPanel.append(el('span',basis==='inferred'?'Inference':basis==='proposed'?'Proposal':basis==='observed'?'Recorded evidence':'Source description','basis-label'));
@@ -337,11 +338,12 @@ export class WorkspaceView {
     if(result&&this.renderConnectionBoundary(panel,result))return;
     if(!record&&!result){panel.append(el('h2','No finding selected'),el('p','Choose a feature to read its retained sources. Viewing evidence does not start an investigation.'));return;}
     const heading=el('h2',result?.overview||record?.title||'Saved finding');if((result?.overview?.length||0)>150)heading.className='long-answer';panel.append(heading);
+    if(result)appendResponseUnderstanding(this,panel,result);
     if(result)this.renderInspectionBoundary(panel,result);
     comparisonOrigins(panel,result);
     if(result){if(result.caveat||result.continuation?.uncertainty)panel.append(el('p',result.caveat||result.continuation.uncertainty,'material-limit'));this.guidance(panel,this.ws.inspected);}
     const shown=new Set();
-    if(result){for(const finding of result.findings||[]){const section=el('section',undefined,'finding-reading-row');section.append(el('h3',finding.question));appendFindingCategory(section,this.state,result,finding);section.append(el('p',finding.finding));for(const index of finding.claimIndexes||[]){const claim=result.claims?.[index];if(claim){this.support(section,claim);shown.add(index);}}panel.append(section);}if(result.findings?.length)appendCategoryKey(panel);}
+    if(result){for(const finding of result.findings||[]){const section=el('section',undefined,'finding-reading-row');section.append(el('h3',finding.question));appendFindingCategory(section,this.state,result,finding);section.append(el('p',finding.finding));appendFindingContext(this,section,result,finding);for(const index of finding.claimIndexes||[]){const claim=result.claims?.[index];if(claim){this.support(section,claim);shown.add(index);}}panel.append(section);}if(result.findings?.length)appendCategoryKey(panel);}
     const message=result||record.message,claims=result?message.claims||[]:(record.row.claimIndexes||[]).map(i=>message.claims?.[i]).filter(Boolean);
     for(const [index,claim]of claims.entries())if(!result||!shown.has(index))this.support(panel,claim);
     if(!claims.length)panel.append(el('p','No source passage is linked to this selection. Its support remains unknown.','material-limit'));
@@ -363,6 +365,7 @@ export class WorkspaceView {
       if(source.applicability==='unknown')section.append(el('p','Current applicability unknown.','material-limit'));
       const actions=el('div',undefined,'support-actions');actions.append(button('Read saved snapshot',()=>this.snapshot(source),'text-button'),button('Open source',()=>this.actions.showSource(this.state.id,source.id),'text-button'));section.append(actions);
       const technical=el('details');technical.append(el('summary','Operation and limitations'),el('pre',JSON.stringify({evidenceId:source.id,kind:source.kind,capturedAt:source.capturedAt,applicability:source.applicability||'unknown',operation:source.operation,parameters:source.parameters,sha256:source.sha256,reaEvidenceId:source.reaEvidenceId,locations:source.locations,comparisonOrigin:source.comparisonOrigin},null,2)));for(const limit of source.limitations||[])technical.append(el('p',limit));section.append(technical);
+      appendNativeMetadata(this,section,source);
     }else if(claim.state!=='proposed')section.append(el('p','The referenced source is unavailable.','material-limit'));panel.append(section);
   }
   async snapshot(source){const dialog=el('dialog',undefined,'workspace-dialog');dialog.append(button('Close',()=>{dialog.close();dialog.remove();},'dialog-close'),el('h2',source.title||'Saved snapshot'));const content=el('div','Loading retained snapshot…');dialog.append(content);document.body.append(dialog);dialog.showModal();try{const snapshot=await window.investigation.snapshot(this.state.id,source.id);content.replaceChildren(el('pre',snapshot.text));if(snapshot.truncated)dialog.append(el('p','Preview capped at 250,000 characters. Open the source file for the complete snapshot.'));}catch(error){renderUserError(content,error,{title:'This saved snapshot could not be read',message:'The investigation remains open. Review the snapshot details, or open the original source file.',action:{label:'Open original source',run:()=>this.actions.showSource(this.state.id,source.id)}});}dialog.addEventListener('close',()=>dialog.remove(),{once:true});}
@@ -453,7 +456,7 @@ export class WorkspaceView {
   start(record){this.runNode(record.id,{mode:'bounded',maxSteps:this.ws.autoDeepen?this.ws.depthLimit:1});}
   search(){const query=this.ws.search.toLowerCase().trim(),results=$('graph-search-results');results.replaceChildren();if(!query){if(this.ws.outline)this.drawOutline();return;}const items=[...this.map.nodes.values()].filter(n=>`${n.title} ${n.summary}`.toLowerCase().includes(query));results.append(el('small',`${items.length} saved nodes`));for(const item of items)results.append(button(`${item.type==='feature'?'Feature':item.type==='result'?'Finding':item.type==='finding'?'Finding':item.type==='direction'?'Next step':'Node'} · ${item.type==='result'?item.summary:item.title}`,()=>{if(item.type==='feature'){this.inspect(this.records.find(r=>r.id===item.id));this.focusMapNode(item.id);}else openMapNode(this,item.id,{focus:true});results.replaceChildren();},'search-match'));if(this.ws.outline)this.drawOutline();}
   installMap(){const viewport=$('workspace-canvas');let drag;viewport.addEventListener('wheel',event=>{if(this.ws.list||event.target.closest('#workspace-list,#node-panel-frame'))return;event.preventDefault();this.cancelFocusMotion();if(!event.ctrlKey&&(event.shiftKey||Math.abs(event.deltaX)>Math.abs(event.deltaY))){this.camera.x-=event.deltaX||event.deltaY;this.camera.y-=event.deltaX?event.deltaY:0;this.applyCamera();}else{const box=viewport.getBoundingClientRect();this.zoom(this.camera.scale*Math.exp(-event.deltaY*.001),{x:event.clientX-box.left,y:event.clientY-box.top});}clearTimeout(this.cameraTimer);this.cameraTimer=setTimeout(()=>{this.saveCamera();this.persist();},120);},{passive:false});viewport.onpointerdown=event=>{if(this.ws.list||event.target.closest('#node-panel-frame,.node-context-menu,button,input,a,select,textarea,summary,label'))return;if(event.button!==0&&event.button!==1)return;this.cancelFocusMotion();drag={x:event.clientX,y:event.clientY,startX:this.camera.x,startY:this.camera.y};viewport.setPointerCapture(event.pointerId);};viewport.onpointermove=event=>{if(drag){this.camera.x=drag.startX+event.clientX-drag.x;this.camera.y=drag.startY+event.clientY-drag.y;this.applyCamera();}};viewport.onpointerup=viewport.onpointercancel=()=>{if(drag){drag=null;this.saveCamera();this.persist();}};$('node-workbench').onscroll=()=>{clearTimeout(this.scrollTimer);this.scrollTimer=setTimeout(()=>{this.saveCamera();this.persist();},120);};}
-  applyCamera(){const scale=Math.max(.025,this.camera.scale||1);const strokeKey=`${this.ws.layout}:${scale}`;if(this.strokeScale!==strokeKey){this.strokeScale=strokeKey;$('map-wires').style.setProperty('--map-camera-scale',String(scale));this.wireFactor=layoutWireStyle(this.ws.layout,scale).factor;$('map-wires').style.setProperty('--map-wire-factor',String(this.wireFactor));this.wireCeiling=layoutWireStyle(this.ws.layout,scale).ceiling;$('map-wires').style.setProperty('--map-wire-ceiling',`${this.wireCeiling}px`);$('node-connection')?.style.setProperty('--map-wire-ceiling',`${this.wireCeiling}px`);$('node-connection')?.style.setProperty('--map-wire-factor',String(this.wireFactor));}syncOrbitGuideStroke(this);$('map-scene').style.transform=`translate(${this.camera.x}px,${this.camera.y}px) scale(${this.camera.scale})`;$('workspace-zoom').textContent=`${Math.round(this.camera.scale*100)}%`;this.connectWorkbench();this.navigation?.camera();syncSelectedHeadline(this);}
+  applyCamera(){syncNodeContexts(this);const scale=Math.max(.025,this.camera.scale||1);const strokeKey=`${this.ws.layout}:${scale}`;if(this.strokeScale!==strokeKey){this.strokeScale=strokeKey;$('map-wires').style.setProperty('--map-camera-scale',String(scale));this.wireFactor=layoutWireStyle(this.ws.layout,scale).factor;$('map-wires').style.setProperty('--map-wire-factor',String(this.wireFactor));this.wireCeiling=layoutWireStyle(this.ws.layout,scale).ceiling;$('map-wires').style.setProperty('--map-wire-ceiling',`${this.wireCeiling}px`);$('node-connection')?.style.setProperty('--map-wire-ceiling',`${this.wireCeiling}px`);$('node-connection')?.style.setProperty('--map-wire-factor',String(this.wireFactor));}syncOrbitGuideStroke(this);$('map-scene').style.transform=`translate(${this.camera.x}px,${this.camera.y}px) scale(${this.camera.scale})`;$('workspace-zoom').textContent=`${Math.round(this.camera.scale*100)}%`;this.connectWorkbench();this.navigation?.camera();syncSelectedHeadline(this);}
   connectWorkbench(){
     this.radialMenu?.sync();
     let link=$('node-connection');if(!link){link=svg('svg',{id:'node-connection','aria-hidden':'true'});link.style.setProperty('--map-wire-factor',String(this.wireFactor??1));link.style.setProperty('--map-wire-ceiling',`${this.wireCeiling??3}px`);$('workspace-canvas').append(link);}link.replaceChildren();if(!this.nodeOpen||this.ws.list||$('node-workbench').classList.contains('starter'))return;
@@ -470,27 +473,29 @@ export class WorkspaceView {
   }
   zoom(scale,anchor){this.cancelFocusMotion();const viewport=$('workspace-canvas');anchor||={x:viewport.clientWidth/2,y:viewport.clientHeight/2};const x=(anchor.x-this.camera.x)/this.camera.scale,y=(anchor.y-this.camera.y)/this.camera.scale;this.camera.scale=Math.max(.025,Math.min(2.5,scale));this.camera.x=anchor.x-x*this.camera.scale;this.camera.y=anchor.y-y*this.camera.scale;this.applyCamera();this.saveCamera();this.persist();}
   cancelFocusMotion(){if(this.focusFrame)cancelAnimationFrame(this.focusFrame);this.focusFrame=null;this.focusResolve?.(false);this.focusResolve=null;}
-  focusExecutionNode(id){
+  focusExecutionNode(id,options={}){
     if(this.legacyMode||!this.map?.nodes.has(id))return Promise.resolve(false);
-    this.radialMenu?.close(false,true);revealMapPath(this,id);
-    for(let node=this.map.nodes.get(id);node;node=this.map.nodes.get(node.parent))if(node.type==='feature'&&!this.ws.expanded.includes(node.id))this.ws.expanded.push(node.id);
-    this.draw();let at=this.map.nodes.get(id);while(at&&!this.points.has(at.id))at=this.map.nodes.get(at.parent);
+    if(!options.idleReturn)this.radialMenu?.close(false,true);
+    const before=JSON.stringify([this.ws.hidden,this.ws.collapsed,this.ws.expanded]);revealMapPath(this,id,{expandTarget:!options.idleReturn});
+    for(let node=this.map.nodes.get(options.idleReturn?this.map.nodes.get(id)?.parent:id);node;node=this.map.nodes.get(node.parent))if(node.type==='feature'&&!this.ws.expanded.includes(node.id))this.ws.expanded.push(node.id);
+    if(!options.idleReturn||before!==JSON.stringify([this.ws.hidden,this.ws.collapsed,this.ws.expanded]))this.draw();let at=this.map.nodes.get(id);if(options.idleReturn&&!this.points.has(id))return Promise.resolve(false);while(at&&!this.points.has(at.id))at=this.map.nodes.get(at.parent);
+    if(options.idleReturn){const p=this.points.get(at?.id),a=this.mapArea(),c=this.camera;if(p&&c.scale>=.8&&p.x*c.scale+c.x>=a.x+16&&p.y*c.scale+c.y>=a.y+16&&(p.x+p.width)*c.scale+c.x<=a.x+a.width-16&&(p.y+p.height)*c.scale+c.y<=a.y+a.height-16)return Promise.resolve(true);}
     const target=executionFocusCamera(this.points.get(at?.id),this.mapArea(),this.camera.scale);
-    return target?this.animateCamera(target):Promise.resolve(false);
+    return target?this.animateCamera(target,options):Promise.resolve(false);
   }
   focusMapNode(id){
     this.cancelFocusMotion();const p=this.points.get(id);if(!p)return;const area=this.mapArea();
     const scale=Math.max(.025,Math.min(1,(Math.max(32,area.width)-24)/p.width,(Math.max(32,area.height)-32)/p.height));
     this.animateCamera({x:area.x+area.width/2-(p.x+p.width/2)*scale,y:area.y+area.height/2-(p.y+p.height/2)*scale,scale});
   }
-  animateCamera(target){
+  animateCamera(target,{idleReturn=false,duration=4000}={}){
     if(this.cameraLocked)return Promise.resolve(false);
     this.navigation?.remember();this.cancelFocusMotion();const from={...this.camera},start=performance.now();
     return new Promise(resolve=>{
     this.focusResolve=resolve;
     const settle=()=>{this.camera=target;this.focusFrame=null;this.focusResolve=null;this.applyCamera();this.saveCamera();this.persist();resolve(true);};
     const motion=themeMotion();if(document.hidden||motion.scale===0){settle();return;}
-    const frame=now=>{const t=Math.min(1,(now-start)/(280*motion.scale)),ease=1-(1-t)**3;this.camera={x:from.x+(target.x-from.x)*ease,y:from.y+(target.y-from.y)*ease,scale:from.scale+(target.scale-from.scale)*ease};this.applyCamera();if(t<1)this.focusFrame=requestAnimationFrame(frame);else settle();};this.focusFrame=requestAnimationFrame(frame);
+    const frame=now=>{const t=Math.min(1,(now-start)/(idleReturn?duration:280*motion.scale)),ease=idleReturn?t*t*(3-2*t):1-(1-t)**3;this.camera={x:from.x+(target.x-from.x)*ease,y:from.y+(target.y-from.y)*ease,scale:from.scale+(target.scale-from.scale)*ease};this.applyCamera();if(t<1)this.focusFrame=requestAnimationFrame(frame);else settle();};this.focusFrame=requestAnimationFrame(frame);
     });
   }
   ensureMapNode(id){if(this.ws.list)return;const p=this.points.get(id);if(!p)return;const area=this.mapArea(),w=Math.max(32,area.width),h=Math.max(32,area.height),x=this.camera.x+p.x*this.camera.scale,y=this.camera.y+p.y*this.camera.scale;if(x<area.x||x+p.width*this.camera.scale>area.x+w||y<area.y||y+p.height*this.camera.scale>area.y+h){this.camera.x=area.x+w/2-(p.x+p.width/2)*this.camera.scale;this.camera.y=area.y+h/2-(p.y+p.height/2)*this.camera.scale;this.applyCamera();this.saveCamera();}}

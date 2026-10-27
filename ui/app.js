@@ -11,6 +11,7 @@ import {installPointerNodeFocus} from './pointer-node-focus.js';
 import {installDocumentUI} from './document-ui.js';
 import {installAgentUI} from './agent-ui.js';
 import {installTextDictation} from './text-dictation.js';
+import {remainingApplicationTurns} from '../lib/application-run-view.mjs';
 import {autoDeepenBoundary} from '../lib/guidance.mjs';
 import {installHistoryDismissal} from './history-panel.js';
 import {useInProject} from './project-handoff.js';
@@ -22,6 +23,7 @@ import {WorkspaceView} from './workspace-view.js';
 import {requestFeature} from '../lib/workspace.mjs';
 import {installDiscoveryFeedback} from './discovery-feedback.js';
 import {resultOutcome} from '../lib/outcomes.mjs';
+import {responseDisplayLabel} from './evidence-understanding.js';
 import {pendingTargetAttempt,waitingTargetAttempt,targetSelectionMessage} from '../lib/target-recovery-state.mjs';
 const api=window.investigation,$=id=>document.getElementById(id);
 document.addEventListener('rea-operation-state',async event=>{if(!event.detail&&state)state.draft=$('message').value;setBusy(event.detail);if(!event.detail&&backRequested&&!depthRun){try{await returnToFeatures();notify('');}catch(error){backRequested=false;notify(error);}}});
@@ -39,8 +41,8 @@ let saveSlowTimer=null,saveSlowOwner=null;
 const label=row=>row.displayLabel||row.name;
 const featureIdentity=name=>(name||'').trim().toLowerCase();
 ensureThemeControls();
-const graphView=new WorkspaceView({choose,keep,submit,recoverTarget,diagnoseFailure,resumeFailure:resumeInterrupted,retryFailure:attempt=>{if(confirm('Retry the original request once? This may repeat inspection work and use your AI service. Saved evidence will be kept.'))submit(attempt.question,attempt.branchFeatureName||null,{retryFailureAttemptId:attempt.id,preserveDraft:true,automation:{maxSteps:1}});},retryAI:resumeSavedAI,refreshAI:attempt=>refreshSavedAI(attempt),continueTarget:attempt=>submit(attempt.question,null,{recoveryAttemptId:attempt.id,continuing:true,preserveDraft:true,nodeId:`attempt:${attempt.id}`,automation:{maxSteps:1}}),stop:stopExecution,pause:()=>{if(agentUI?.running){api.agentPause().catch(error=>notify(error));return;}if(depthRun){depthRun.pauseRequested=true;showRunProgress('Pausing after current step');}},showSource:api.showSource,exportDelivery:api.exportDelivery,notify,
-  openSetup:()=>$('setup-open').click(),retryPreflight:()=>{const request=state.preflight?.request;if(request?.text&&confirm('Recheck prerequisites and retry the saved request? Research starts only if required checks pass, and may use your selected AI account or credits. Your current draft is preserved.'))submit(request.text,request.branchFeatureName,{...request.options,preserveDraft:true,automation:{maxSteps:1}});},
+const graphView=new WorkspaceView({choose,keep,submit,recoverTarget,diagnoseFailure,resumeFailure:resumeInterrupted,retryFailure:attempt=>{if(confirm('Retry the original request once? This may repeat inspection work and use your AI service. Saved evidence will be kept.'))submit(attempt.question,attempt.branchFeatureName||null,{retryFailureAttemptId:attempt.id,preserveDraft:true,automation:state.applicationRun?undefined:{maxSteps:1}});},retryAI:resumeSavedAI,refreshAI:attempt=>refreshSavedAI(attempt),continueTarget:attempt=>submit(attempt.question,null,{recoveryAttemptId:attempt.id,continuing:true,preserveDraft:true,nodeId:`attempt:${attempt.id}`,applicationRunId:state.applicationRun?.id}),stop:stopExecution,pause:()=>{if(agentUI?.running){api.agentPause().catch(error=>notify(error));return;}if(depthRun){depthRun.pauseRequested=true;showRunProgress('Pausing after current step');}},showSource:api.showSource,exportDelivery:api.exportDelivery,notify,
+  openSetup:()=>$('setup-open').click(),retryPreflight:()=>{const request=state.preflight?.request;if(request?.text&&confirm('Recheck prerequisites and retry the saved request? Research starts only if required checks pass, and may use your selected AI account or credits. Your current draft is preserved.'))submit(request.text,request.branchFeatureName,{...request.options,preserveDraft:true,automation:state.applicationRun?undefined:{maxSteps:1}});},
   workspace:ws=>{if(state){state.workspace=ws;saveWorkspace();}},destination:updateDestination,
   inspected:()=>{updateDestination();agentUI?.browsing();},challenge:result=>graphView.previewAction(`turn:${result.id}`,'verify'),
   openAgentControl:(investigationId,nodeId)=>agentUI?.openFromFeature({investigationId,nodeId}),
@@ -143,15 +145,16 @@ function stopExecution(){if(agentUI?.running){api.agentStop().catch(error=>notif
 function showRunProgress(prefix){if(!depthRun)return;graphView.stepRun=depthRun;graphView.runProgress=stepProgress(depthRun,prefix);$('depth-progress').textContent=graphView.runProgress;graphView.draw();}
 function resizeInput(){const input=$('message');input.style.height='auto';input.style.height=`${Math.min(160,Math.max(48,input.scrollHeight))}px`;}
 function setBusy(value){
-  busy=value;$('apply-update').disabled=value||fileBusy||restarting;feedback.update(updateReady,value||fileBusy||restarting);for(const id of ['new','file-new','welcome-start','welcome-folder','folder','send','export-graph','export-kept','export-investigation','import-history','guided-deepen','document-open','document-save','document-save-as','document-share'])$(id).disabled=value||fileBusy||starting||restarting;
+  busy=value;$('surface-pass').disabled=value||fileBusy||starting;$('application-grant').disabled=value||fileBusy||starting;$('apply-update').disabled=value||fileBusy||restarting;feedback.update(updateReady,value||fileBusy||restarting);for(const id of ['new','file-new','welcome-start','welcome-folder','folder','send','export-graph','export-kept','export-investigation','import-history','guided-deepen','document-open','document-save','document-save-as','document-share'])$(id).disabled=value||fileBusy||starting||restarting;
   $('export-kept').disabled=value||fileBusy||starting||restarting||!state?.keptFeatures?.length;document.querySelectorAll('.history-entry button').forEach(button=>button.disabled=value||fileBusy);graphView.fileBusy=fileBusy||restarting;graphView.starting=starting;graphView.setBusy(value);$('stop').hidden=!(value||starting);
   const selected=state&&selectedFeature(state);$('activate').hidden=true;$('activate').disabled=value;
-  $('back').hidden=!state?.messages.length;$('send').textContent=value?(state?.messages.length?'Running…':'Discovering…'):(state?.messages.length?'Send':'Discover');
+  $('back').hidden=!state?.messages.length;$('send').textContent=value?(state?.messages.length?'Running…':'Discovering…'):(state?.messages.length?'Send':'Investigate');
   syncAgentSetupPrompt();
   $('message').placeholder=!state?.messages.length?'Website, app path, or question…':graphView.selectedRecord()?`Ask about ${graphView.selectedRecord().title}…`:'Add a source or ask about this investigation…';
 }
 const recoveredViews=new Set();
 function render(){
+  const ar=state?.applicationRun; $('surface-pass').hidden=!!ar||!!state?.messages.some(m=>m.role==='assistant');$('application-grant').hidden=!ar||!!busy||ar.mode==='investigate'&&remainingApplicationTurns(ar)>0;$('application-grant').textContent=ar?.mode==='surface'?'Investigate application…':'Grant additional work…';$('application-allowance').textContent=ar?`${ar.mode==='surface'?'Surface Pass':'Investigate'} · ${remainingApplicationTurns(ar)} turns available (including a paused turn) · ${ar.used.reads}/${ar.limits.reads} read attempts used. Resume keeps this allowance.`:'';
   documentUI?.refresh();feedback.context(state.id);
   $('welcome').hidden=true;graphView.update(state,busy);
   $('export-kept').hidden=!state.keptFeatures?.length;$('view-latest-result').hidden=true;
@@ -208,6 +211,7 @@ async function returnToFeatures(){
 }
 async function submit(text,branchFeatureName,options={}){
   if(busy||fileBusy||starting||restarting||backRequested||!text.trim())return;
+  if(state.applicationRun){options.applicationRunId=state.applicationRun.id;}else if(!state.messages.some(m=>m.role==='assistant')&&!options.auditIds)options.applicationMode||='investigate';
   const localCollection=collectionIntent(state,text);
   if(localCollection&&!localCollection.clarification){const record=inventoryRecord(state,localCollection);if(record)return keep(record.message,record.row,localCollection.keep,{text,requestId:crypto.randomUUID()});}
   // Check the connection before creating execution state, clocks or result feedback.
@@ -221,7 +225,8 @@ async function submit(text,branchFeatureName,options={}){
   if(!explicit){const matches=requestFeature(text,graphView.records);if(matches.length>1){notify('Open the feature node that should receive this question.');return;}if(matches.length===1)state.draftContext=contextForRecord(matches[0]);const ctx=state.draftContext||contextForRecord(graphView.selectedRecord());branchFeatureName=ctx.featureName||null;if(ctx.featureName&&!graphView.records.some(r=>featureIdentity(r.row.name)===featureIdentity(ctx.featureName))){notify('This draft’s node is unavailable. Open a node and use Move draft here before sending.');return;}if(ctx.resultId){options.parentResultId=ctx.resultId;options.parentNodeId=ctx.nodeId||`turn:${ctx.resultId}`;}if(ctx.resultId&&/^(?:what supports|where did|show (?:me )?(?:the )?evidence|is .+ supported)/i.test(text.trim()))options.auditIds=[ctx.resultId];}
   const submittedContext=state.draftContext?{...state.draftContext}:null,submittedContextKey=JSON.stringify(submittedContext),submittedRevision=draftRevision;
   const executionNodeId=options.nodeId||options.parentNodeId||(!explicit&&state.draftContext?.nodeId)||(branchFeatureName?graphView.records.find(r=>featureIdentity(r.row.name)===featureIdentity(branchFeatureName))?.id:null)||(!explicit?'core':graphView.ws.inspected||'core');
-  const submittedId=state.id,discovering=!state.messages.length,total=options.auditIds?1:normalizeStepLimit(options.automation?options.automation.maxSteps:$('auto-deepen').checked?$('depth-limit').value:1);
+  const submittedId=state.id,discovering=!state.messages.length,total=options.auditIds?1:Math.max(1,Math.min(state.applicationRun&&!options.additionalTurns?remainingApplicationTurns(state.applicationRun):20,normalizeStepLimit(options.automation?options.automation.maxSteps:$('auto-deepen').checked?$('depth-limit').value:1)));
+  options.automation={maxSteps:total};
   // The same intent exists before any startup await, including pending saves.
   const run=depthRun=createStepRun(total),valid=()=>state.id===submittedId&&!run.cancelled&&!backRequested;
   let ending='',failure='',lastOutcome=null,started=false,pendingResultSnapshot=null,consumedDraft=false;
@@ -253,7 +258,8 @@ async function submit(text,branchFeatureName,options={}){
       run.current=null;
       if(state.id!==submittedId||updated.id!==submittedId){ending='Investigation changed; no further request was sent.';break;}
       const draft=$('message').value;state={...updated,draft,draftContext:state.draftContext,workspace:state.workspace};
-      const latest=newSavedResult(state,before);pendingResultSnapshot=null;if(latest){run.completed++;lastOutcome=resultOutcome(state,latest);}showRunProgress();notify('');render();
+      if(state.applicationRun){options.applicationRunId=state.applicationRun.id;delete options.applicationMode;delete options.additionalTurns;}
+      const latest=newSavedResult(state,before);pendingResultSnapshot=null;if(latest){run.completed++;lastOutcome={...resultOutcome(state,latest),label:responseDisplayLabel(state,latest)};}showRunProgress();notify('');render();
       if(waitingTargetAttempt(state)){ending=targetSelectionMessage(waitingTargetAttempt(state));break;}
       if(state.preflight?.status==='blocked'){restoreSubmittedDraft();ending=state.preflight.canceled?'Readiness check canceled. Your request is preserved.':'Setup required before investigation. Your target and request are preserved.';graphView.ws.inspected='utility:preflight';graphView.draw();$('node-workbench').scrollTop=0;break;}
       if(!valid()){ending=run.cancelled?'Stopped by you.':'Returning to features.';break;}
@@ -270,18 +276,18 @@ async function submit(text,branchFeatureName,options={}){
   }catch(error){
     if(run.cancelled)ending='Stopped by you.';
     else{const info=explainFailure({reason:error.message});failure=info.explanation+' '+info.nextAction;}
-    if(state.id===submittedId){try{const saved=await api.open(submittedId);if(state.id===submittedId){state={...saved,draft:$('message').value,draftContext:state.draftContext,workspace:state.workspace};const latest=pendingResultSnapshot&&newSavedResult(state,pendingResultSnapshot);if(latest){run.completed++;lastOutcome=resultOutcome(state,latest);}}}catch{}restoreSubmittedDraft();}
+    if(state.id===submittedId){try{const saved=await api.open(submittedId);if(state.id===submittedId){state={...saved,draft:$('message').value,draftContext:state.draftContext,workspace:state.workspace};const latest=pendingResultSnapshot&&newSavedResult(state,pendingResultSnapshot);if(latest){run.completed++;lastOutcome={...resultOutcome(state,latest),label:responseDisplayLabel(state,latest)};}}}catch{}restoreSubmittedDraft();}
   }finally{
     run.current=null;starting=false;graphView.stepRun=null;graphView.preparingNode=null;graphView.runningNode=null;graphView.finished();$('depth-limit').disabled=false;
-    const stopped=run.cancelled?'Stopped by you.':backRequested?'Returning to features.':ending||(!started?'Paused before investigation.':run.pauseRequested?'Paused before next step.':run.completed?`${lastOutcome?.label||'Answer saved'} for ${branchFeatureName||'this investigation'}.`:'No new completed answer.');
+    const stopped=run.cancelled?'Stopped by you.':backRequested?'Returning to features.':state.applicationRun?.stopReason||ending||(!started?'Paused before investigation.':run.pauseRequested?'Paused before next step.':run.completed?`${lastOutcome?.label||'Answer saved'} for ${branchFeatureName||'this investigation'}.`:'No new completed answer.');
     const waiting=!failure&&!run.cancelled&&waitingTargetAttempt(state),setupBoundary=!failure&&!run.cancelled&&state.preflight?.status==='blocked'&&!!state.preflight.request;
     graphView.lastStepOutcome={...graphView.runStatusOwner,request:submittedText,status:failure?'failed':run.cancelled?'stopped':setupBoundary?'blocked':run.completed?'saved':'idle'};
     graphView.lastRunOutcome=waiting?targetSelectionMessage(waiting):setupBoundary?'':stepProgress(run,failure?(state.attempts?.findLast(a=>a.aiRecovery?.status==='paused')?.aiRecovery.message||`Failed: ${failure}`):stopped);graphView.runProgress='';$('depth-progress').textContent=graphView.lastRunOutcome;depthRun=null;
     if(state.id===submittedId){state.draft=$('message').value;if(run.cancelled&&!run.completed)restoreSubmittedDraft();}
-    setBusy(false);$('send').textContent=state.messages.length?'Send':'Discover';
+    setBusy(false);$('send').textContent=state.messages.length?'Send':'Investigate';
     if(backRequested){await returnToFeatures();}else{render();if(started&&!$('composer').hidden){const step=$('workspace-inspector').querySelector('[data-saved-step-run]');if(step&&!step.disabled)step.focus({preventScroll:true});else if(graphView.map?.nodes.get(graphView.ws.inspected)?.type!=='direction')$('message').focus();}}
     notify(failure?new Error(failure):graphView.lastRunOutcome);
-    if(waiting||setupBoundary||failure&&pendingTargetAttempt(state)){feedback.clear();}else feedback.finish(failure?(discovering?'Discovery failed':'Investigation failed'):run.cancelled?'Stopped':state.preflight?.status==='blocked'?'Setup required':lastOutcome?.status==='blocked'?(discovering?'Discovery blocked':lastOutcome.label):discovering&&run.completed?'Discovery complete':run.completed?lastOutcome?.label||'Answer saved':'No completed answer',graphView.lastRunOutcome);execution=null;
+    if(waiting||setupBoundary||failure&&pendingTargetAttempt(state)){feedback.clear();}else feedback.finish(state.applicationRun&&!failure&&!run.cancelled?(state.applicationRun.status==='answered'?'Application question answered':state.applicationRun.mode==='surface'?'Surface Pass saved':'Application investigation paused'):failure?(discovering?'Discovery failed':'Investigation failed'):run.cancelled?'Stopped':state.preflight?.status==='blocked'?'Setup required':lastOutcome?.status==='blocked'?(discovering?'Discovery blocked':lastOutcome.label):discovering&&run.completed?'Discovery complete':run.completed?lastOutcome?.label||'Answer saved':'No completed answer',graphView.lastRunOutcome);execution=null;
     if(state.id===submittedId)await saveWorkspace().catch(error=>notify(error));
   }
 }
@@ -290,6 +296,8 @@ function saveDepthSettings(){graphView.ws.autoDeepen=$('auto-deepen').checked;gr
 $('depth-limit').oninput=()=>{$('depth-value').textContent=$('depth-limit').value;saveDepthSettings();};
 $('auto-deepen').onchange=()=>{$('depth-options').hidden=!$('auto-deepen').checked;saveDepthSettings();if(depthRun&&!$('auto-deepen').checked){depthRun.pauseRequested=true;showRunProgress('Automatic continuation off; finishing current step');}};
 $('composer').onsubmit=event=>{event.preventDefault();submit($('message').value);};
+$('surface-pass').onclick=()=>submit($('message').value,undefined,{applicationMode:'surface',automation:{maxSteps:1}});
+$('application-grant').onclick=()=>{const turns=$('auto-deepen').checked?normalizeStepLimit($('depth-limit').value):1;if(confirm(`Grant ${turns} additional investigation turn${turns===1?'':'s'}? Prior usage remains recorded. This may use your AI service.`))submit(state.applicationRun.originalRequest,null,{applicationRunId:state.applicationRun.id,applicationMode:'investigate',additionalTurns:turns,continuing:true,preserveDraft:true,automation:{maxSteps:turns}});};
 $('message').onkeydown=event=>{if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)){event.preventDefault();submit($('message').value);}};
 $('message').oninput=()=>{draftRevision++;resizeInput();clearTimeout(draftTimer);const text=$('message').value;state.draft=text;if(text.trim()&&!state.draftContext)state.draftContext=contextForRecord(graphView.selectedRecord(),graphView.result?.id||'');if(!text.trim())state.draftContext=null;const matches=requestFeature(text,graphView.records);if(matches.length===1)state.draftContext=contextForRecord(matches[0]);updateDestination();saveWorkspace();};
 $('folder').onclick=async()=>{try{const folder=await api.chooseFolder();if(folder){graphView.openRoot();$('message').value+=`${$('message').value?'\n':''}"${folder}"\n`;$('message').dispatchEvent(new Event('input'));$('message').focus();}}catch(error){notify(error);}};

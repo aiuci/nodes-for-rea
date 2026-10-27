@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Copyright (C) 2026 Jeremy Opio
 // Own only successful, current focus attempts. Failed/cancelled attempts are retryable.
-export function createAgentFollow(view,{onError=()=>{}}={}){
+export function createAgentFollow(view,{onError=()=>{},preserveSelection=false,growth=true,focusOptions}={}){
   let key=null,token=0,pending=false,success=null,signature=null,enabled=true;
   const reset=(cancel=enabled)=>{token++;pending=false;success=null;signature=null;if(cancel)view.cancelFocusMotion?.();};
   const pause=()=>{enabled=false;reset(true);view.growthRun=null;};
@@ -16,10 +16,11 @@ export function createAgentFollow(view,{onError=()=>{}}={}){
     if(!view.map?.nodes.has(nodeId))return false;
     const attempt=++token;pending=true;
     try{
-      view.runningNode=nodeId;view.ws.inspected=nodeId;view.draw();
-      const focused=await view.focusExecutionNode(nodeId);
+      view.runningNode=nodeId;if(!preserveSelection)view.ws.inspected=nodeId;
+      if(!preserveSelection)view.draw();
+      const focused=await view.focusExecutionNode(nodeId,focusOptions);
       if(attempt!==token||!enabled)return false;
-      if(focused===true){success=key;signature=JSON.stringify([view.ws?.layout,view.points?.get(nodeId),view.mapArea?.()]);view.persist();view.beginGrowth?.(nodeId);return true;}
+      if(focused===true){success=key;signature=JSON.stringify([view.ws?.layout,view.points?.get(nodeId),view.mapArea?.()]);view.persist();if(growth)view.beginGrowth?.(nodeId);return true;}
       return false;
     }catch(error){if(attempt===token)onError(error);return false;}
     finally{if(attempt===token)pending=false;}

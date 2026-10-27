@@ -7,7 +7,8 @@ import {outlineRows,revealOutlinePaths} from '../lib/outline-state.mjs';
 import {openMapNode,collapseBranch} from './growing-map.js';
 import {wireContextActions,wireRadialTrigger} from './radial-menu.js';
 import {nodeStatus,nodeStatusMarker} from './node-status.js';
-import {categoryBadge} from './finding-category.js';
+import {nodeContextText,readingStatement} from './evidence-understanding.js';
+import {wireNodeTooltip} from './node-tooltip.js';
 const el=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;};
 const button=(text,run,cls)=>{const n=el('button',text,cls);n.type='button';n.onclick=run;return n;};
 
@@ -53,7 +54,9 @@ export function drawOutline(view){
     if(children.length){const fold=button(folded?'›':'⌄',()=>{const forced=view.ws.collapsed.includes(id)&&view.ws.outlineExpanded.includes(id);view.ws.outlineExpanded=view.ws.outlineExpanded.filter(key=>key!==id);if(forced){view.draw();view.persist();}else collapseBranch(view,id);},'outline-fold');fold.setAttribute('aria-label',`${folded?'Expand':'Collapse'} ${item.title}`);fold.setAttribute('aria-expanded',String(!folded));slot.append(fold);}
     const label=button(item.title,()=>{openMapNode(view,id,{focus:true});[...panel.querySelectorAll('.outline-node')].find(node=>node.dataset.nodeId===id)?.focus({preventScroll:true});},'outline-node');label.dataset.nodeId=id;label.title=item.summary||item.title;if(selected===id)label.setAttribute('aria-current','true');wireContextActions(view,id,row,'outline');
     const status=nodeStatus(view,item),marker=nodeStatusMarker(status);label.setAttribute('aria-description',status);if(marker?.tone==='neutral'&&item.type!=='finding'){const mark=el('span',marker.symbol,'outline-selection-marker');mark.setAttribute('aria-hidden','true');label.prepend(mark);}
-    if(item.type==='finding')label.append(categoryBadge(item.category,'outline-finding-category'));
+    if(item.type==='finding'&&marker){const mark=el('span',marker.symbol,'outline-evidence-marker');mark.dataset.findingCategory=item.category.key;mark.setAttribute('aria-hidden','true');mark.title=[status,item.category.detail].join(' · ');label.prepend(mark);}
+    if(item.understanding){const text=nodeContextText(item);if(text){const context=el('small',item.type==='finding'?readingStatement(view.state,item):text.knowledge,'outline-evidence-context');context.dataset.evidenceScope=text.scope;label.append(context);label.title=[status,item.category?.detail,item.summary,text.description].filter(Boolean).join('\n');label.setAttribute('aria-description',[status,text.description].filter(Boolean).join('. '));}}
+    if(item.type==='finding')wireNodeTooltip(label,()=>label.title,'status');
     const actions=button('⋯',event=>{event.stopPropagation();view.nodeMenu(id,event.currentTarget,{pin:true,focus:true,representation:'outline'});},'outline-actions');actions.dataset.nodeId=id;actions.setAttribute('aria-label',`Actions for ${item.title}`);wireRadialTrigger(view,id,actions,{representation:'outline'});row.append(label);if(item.type==='feature'){const record=view.records.find(r=>r.id===id);if(record)row.append(bookmark(view,record,'outline'));}row.append(actions);
     if(newRoots.has(id))row.append(el('small','New','outline-new'));if(view.ws.hidden.includes(id))row.append(el('small','hidden'));tree.append(row);
   }

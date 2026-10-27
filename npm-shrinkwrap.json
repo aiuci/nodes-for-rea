@@ -1,12 +1,12 @@
 {
   "name": "nodes-for-rea",
-  "version": "0.3.0-preview.20261025.6",
+  "version": "0.3.0-preview.20261027.1",
   "lockfileVersion": 3,
   "requires": true,
   "packages": {
     "": {
       "name": "nodes-for-rea",
-      "version": "0.3.0-preview.20261025.6",
+      "version": "0.3.0-preview.20261027.1",
       "cpu": [
         "x64"
       ],
